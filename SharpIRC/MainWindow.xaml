@@ -1,0 +1,11 @@
+﻿<Window x:Class="SharpIRC.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="600" Width="800">
+    <Grid>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="10,524,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="772" SpellCheck.IsEnabled="True"/>
+        <TextBox x:Name="LoggerTextBox" HorizontalAlignment="Left" Height="519" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="782" IsEnabled="False"/>
+        <StatusBar HorizontalAlignment="Left" Height="23" Margin="0,547,0,0" VerticalAlignment="Top" Width="792"/>
+        <DataGrid HorizontalAlignment="Left" Margin="-95,369,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
