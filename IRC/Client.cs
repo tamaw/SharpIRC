@@ -47,18 +47,44 @@ namespace IRC
         {
             Logger = Console.WriteLine;
             Port = 6667;
+            //ServerPass = "none";
             // todo defaults for other types?
         }
 
-        new public void Connect() 
+        // todo could be static return instance of this class?
+        public new void Connect() 
         {
+
+            // todo ensure required filds are populated
+
+            // create the tcp connection
             base.Connect();
 
             // start listening
             var listener = new Listener(this, TcpClient.GetStream());
-            // todo instead of passing client maybe subscribe to listener events?
+            // todo instead of passing client maybe lisenter subscribe to client events?
             _listenerThread = new Thread(listener.Listen);
             _listenerThread.Start();
+
+            // offical RFC 2812 doesn't support a message to start the
+            // client registration. additionally CAP does.
+
+            // send the password is there is one
+            if (!string.IsNullOrEmpty(ServerPass))
+                this.Pass(ServerPass);
+
+            // register nickname message
+            this.Nick(Nickname);
+
+            // send user message
+            this.User(Nickname, (User.Mode) 8, RealName);
+
+
+
+            // sleep and quit
+            //Thread.Sleep(10000); 
+
+            //this.Quit("Test quit");
         }
 
         new public void Disconnect()
@@ -68,6 +94,8 @@ namespace IRC
             this.Quit(); // todo add quit messages
             // wait for error message to acknoledge quit
 
+
+            // todo prob sholdnt send the bottom stuff
             if(_listenerThread != null)
                 _listenerThread.Abort();
 
@@ -78,14 +106,13 @@ namespace IRC
         {
             var client = new Client
                              {
-                                 Nickname = "Tama00",
+                                 Nickname = "TamaTest",
                                  RealName = "Tama",
                                  Server = "chat.freenode.org"
                              };
 
             client.Connect();
 
-            //??
 
             //Channel.Join(client, "#test");
             //client.Join("#test");

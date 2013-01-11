@@ -19,6 +19,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -28,18 +29,18 @@ using System.Threading.Tasks;
 
 namespace IRC
 {
-    public class Connection : IDisposable
+    public class Connection 
     {
         public string Server { get; set; } // max 63 characters
         public int Port { get; set; }
         public Logger Logger { get; set; }
-        protected TcpClient TcpClient;
+        protected TcpClient TcpClient; // tcplistener?
 
         public Connection()
         {
         }
 
-        public Connection(string server,  int port = 6667, string pass = "")
+        public Connection(string server,  int port = 6667)
         {
             Server = server;
             Port = port;
@@ -47,7 +48,8 @@ namespace IRC
 
         protected internal void Send(string message) // sends all messages
         {
-            byte[] data = Encoding.ASCII.GetBytes(message);
+            byte[] data = Encoding.ASCII.GetBytes(message + "\n");
+            Debug.WriteLine(message); // todo make debug?
             TcpClient.GetStream().Write(data, 0, data.Length);
         }
 
@@ -70,9 +72,11 @@ namespace IRC
             TcpClient.Close();
         }
 
+        /*
         public void Dispose()
         {
             TcpClient.Close();
         }
+        */
     }
 }

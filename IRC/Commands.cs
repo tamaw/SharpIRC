@@ -19,6 +19,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,15 +32,22 @@ namespace IRC
     // or maybe move them all to extend client
     internal static class Commands 
     {
+
+        #region Connection Registration
+
+        public static void Pass(this Client client, string password)
+        {
+            client.Send("PASS " + password);
+        }
+
         public static void Nick(this Client client, string nickname)
         {
             client.Send("NICK " + nickname);
         }
 
-        // todo mode might be different here!?
         public static void User(this Client client, string user, User.Mode mode, string realname)
         {
-            client.Send("USER " + user + " " + mode + "* :" + realname);
+            client.Send("USER " + user + " " + mode + " * :" + realname);
         }
 
         public static void Oper(this Client client, string name, string password)
@@ -69,6 +77,9 @@ namespace IRC
             client.Send("SQUIT " + server + " :" + comment);
         }
 
+        #endregion
+
+        #region Channel Operations
         public static void Join(this Client client, string name, string key = "")
         {
             client.Send("JOIN " + name + " " + key);
@@ -159,19 +170,23 @@ namespace IRC
             else
                 client.Send("KICK " + string.Join(",", channels) + " " + string.Join(",", users) + " :" + comment);
         }
+        #endregion
 
+        #region Sending Messages
         // send a message to 
         public static void PrivMsg(this Client client, string msgTarget, string message)
         {
             client.Send("PRIVMSG " + msgTarget + " :" + message);
         }
 
-        // notice is teh same as privmsg excpet no automatic messages should be sent back
+        // notice is the same as privmsg excpet no automatic messages should be sent back
         public static void Notice(this Client client, string msgTarget, string text)
         {
             client.Send("NOTICE " + msgTarget + " " + text);
         }
+        #endregion
 
+        #region Server Queries and Commands
         public static void LUsers(this Client client, string mask = "", string target = "")
         {
             client.Send("LUSER " + mask + " " + target);
@@ -241,6 +256,8 @@ namespace IRC
         {
             client.Send("INFO " + target);
         }
+
+        #endregion
 
         #region Service Query and Commands
         /*

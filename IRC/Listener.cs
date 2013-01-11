@@ -19,15 +19,17 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace IRC
 {
 
-    public enum Reply
+    public enum ReplyCode
     {
         RplNone = 0,
         // Initial
@@ -250,7 +252,6 @@ namespace IRC
             // todo subscribe to events & maybe ditch client memeber
         }
 
-
         public void Listen() // todo maybe move later
         {
             var data = new byte[4076]; // MAX 512 characters per message (ascii/unicode?)
@@ -258,9 +259,102 @@ namespace IRC
             int size;
             while ((size = _networkStream.Read(data, 0, data.Length)) != 0)
             {
-                // concurrency issues below?? maybe make logger a queue?
-                _client.Logger(Encoding.ASCII.GetString(data, 0, size));
+                string[] messages = Encoding.ASCII.GetString(data, 0 , size).Split('\n');
+
+                foreach (var message in messages)
+                {
+                    // trim message?
+                    if (string.IsNullOrEmpty(message))
+                        continue;
+                    if (!message.EndsWith("\r")) // half message
+                        continue; //for now. eventuall rejoin it with the next packet
+                    var reply = Reply.Decode(message);
+                    //_client.Logger(reply.ToString());
+                    _client.Logger(message);
+
+                    ProcessMessage(reply);
+                }
+                // messages can continue to come in different reads
+
+                // todo concurrency issues below?? maybe make logger a queue?
+                //_client.Logger(Encoding.ASCII.GetString(data, 0, size));
             }
         }
+
+        // todo maybe move this?
+         private void ProcessMessage(Reply reply)
+         {
+             switch (reply.Command)
+             {
+                 case "NOTICE":
+                     //_client.Logger("RECIEVED A NOTICE!");
+                     break;
+                 case "PING" :
+                     _client.Pong(reply.Params[0]);
+                     break;
+
+             }
+         }
+
     }
+
+    class Reply // todo rename to message maybe?
+    {
+        public string Prefix { get; set; }
+        public string Command { get; set; }
+        public List<string> Params { get; set; }
+
+        public Reply()
+        {
+            Params = new List<string>();
+        }
+
+        public static Reply Decode(string message)
+        {
+            var reply = new Reply();
+            string trailing = string.Empty;
+            int prefixEnd = -1;
+
+            if (message.StartsWith(":"))
+            {
+                prefixEnd = message.IndexOf(' ');
+                reply.Prefix = message.Substring(1, prefixEnd - 1);
+            }
+
+            int trailingStart = message.IndexOf(" :", StringComparison.Ordinal);
+            if (trailingStart >= 0)
+                trailing = message.Substring(trailingStart + 2);
+            else
+                trailingStart = message.Length;
+
+            string[] commandAndParameters = message.Substring(prefixEnd + 1, trailingStart - prefixEnd - 1).Split(' ');
+
+            reply.Command = commandAndParameters.First();
+
+            if (commandAndParameters.Length > 1)
+                reply.Params = commandAndParameters.Skip(1).ToList();
+
+            if (!String.IsNullOrEmpty(trailing))
+                reply.Params.Add(trailing);
+
+            // command
+
+            return reply;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder(string.Format("Prefix: {0}, Command: {1}, Params: ", Prefix, Command));
+            sb.Append(Params.Count);
+            /*
+            foreach (var param in Params)
+            {
+                sb.Append(param + ",");
+            }
+            */
+
+            return sb.ToString();
+        }
+    }
+
 }
