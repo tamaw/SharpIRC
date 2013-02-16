@@ -27,7 +27,7 @@ namespace IRC
 {
     public sealed class Channel
     {
-        public readonly ObservableCollection<User> Users = new ObservableCollection<User>();  
+        public readonly ObservableCollection<User> Users = new ObservableCollection<User>();
         public string Name { get; private set; } // case insensitive
         public string Key { get; private set; } // set changes if OP
         public Client Client { get; private set; }

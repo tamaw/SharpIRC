@@ -5,17 +5,10 @@
         Title="SharpIRC" Height="600" Width="800">
 
         <Grid>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="200,524,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="582" SpellCheck.IsEnabled="True"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="200,524,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="582" SpellCheck.IsEnabled="True"/>
         <StatusBar HorizontalAlignment="Left" Height="18" Margin="0,552,0,0" VerticalAlignment="Top" Width="792"/>
-        <ListBox x:Name="MessageDispalyListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="466" VerticalAlignment="Top" Width="582" Margin="200,53,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible">
-        </ListBox>
-        <ListView HorizontalAlignment="Left" Height="494" Margin="0,53,0,0" VerticalAlignment="Top" Width="195">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <ListBox x:Name="MessageDispalyListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="466" VerticalAlignment="Top" Width="582" Margin="200,53,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <ListView x:Name="UsersListView" HorizontalAlignment="Left" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Height="494" Margin="0,53,0,0" VerticalAlignment="Top" Width="195"/>
         <Menu HorizontalAlignment="Right" Height="23" VerticalAlignment="Top" Width="792"/>
         <TabControl HorizontalAlignment="Left" Height="30" Margin="0,23,0,0" VerticalAlignment="Top" Width="792">
             <TabItem Header="TabItem">

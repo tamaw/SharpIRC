@@ -37,7 +37,10 @@ namespace SharpIRC
 
             Channel channel = client.CreateChannel("#ubuntu");
             var channelViewModel = new ChannelViewModel(Dispatcher, channel);
+
             MessageDispalyListBox.DataContext = channelViewModel.Messages;
+            UsersListView.DataContext = channelViewModel.Users;
+
             channel.Message += (sender, s) => Debug.WriteLine("message: " + s);
             // todo message should probably have sender 
             
