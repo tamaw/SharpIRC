@@ -19,6 +19,8 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -31,44 +33,55 @@ namespace IRC
     // instance of a client connecting to a server, allow multiple
     public delegate void Logger(string message);
 
-    public class Client : Connection //todo client to not extend commands?
+    // todo maybe bring connection into client
+    public class Client : Connection  // client to contain connection (composition)
     {
-        // todo maybe replace below with localuser
-
-        public string Nickname { get; set; }
         public string RealName { get; set; }
         public string ServerPass { get; set; }
+        public string LeaveMessage { get; set; }
+        public Dictionary<string, Channel> Channels { get; private set; }
 
-        private Thread _listenerThread;
+        public string Nickname {
+            get { return _nickname; }
+            set
+            {
+                if(IsConnected)
+                    this.Nick(value); // update on server
+                _nickname = value;
+            }
+        }
 
-        // todo connection status?
-
+        #region Constructors
         public Client()
         {
-            Logger = Console.WriteLine;
+            Channels = new Dictionary<string, Channel>(5);
+            Logger = message => Debug.WriteLine(message);
             Port = 6667;
             //ServerPass = "none";
             // todo defaults for other types?
+            LeaveMessage = "Bye everyone!";
         }
+        #endregion
 
         // todo could be static return instance of this class?
         public new void Connect() 
         {
-
             // todo ensure required filds are populated
 
             // create the tcp connection
             base.Connect();
 
             // start listening
-            var listener = new Listener(this, TcpClient.GetStream());
+            _listener = new Listener(this, TcpClient.GetStream());
+            _listener.ReceivedReply += ProcessReply;
             // todo instead of passing client maybe lisenter subscribe to client events?
-            _listenerThread = new Thread(listener.Listen);
+            _listenerThread = new Thread(_listener.Listen);
             _listenerThread.Start();
 
             // offical RFC 2812 doesn't support a message to start the
             // client registration. additionally CAP does.
 
+            Thread.Sleep(500);
             // send the password is there is one
             if (!string.IsNullOrEmpty(ServerPass))
                 this.Pass(ServerPass);
@@ -78,52 +91,89 @@ namespace IRC
 
             // send user message
             this.User(Nickname, (User.Mode) 8, RealName);
-
-
-
-            // sleep and quit
-            //Thread.Sleep(10000); 
-
-            //this.Quit("Test quit");
         }
 
-        new public void Disconnect()
+        protected void ProcessReply(object sender, Reply reply)
         {
+            switch (reply.Command)
+            {
+                case "NOTICE":
+                    //_client.Logger("RECIEVED A NOTICE!");
+                    break;
+                case "PING":
+                    this.Pong(reply.Trailing);
+                    break;
+                case "JOIN" :
+                    if (reply.Params.Count <= 0 && !Channels.ContainsKey(reply.Params[0]))
+                        return;
+                    break;
+                case "MODE":
+                    break;
+                case "ERROR" :
+                    Logger("error here");
+                    break;
+            }
 
-            // todo send Quit
-            this.Quit(); // todo add quit messages
+            // if it doesn't a string match cast to reply commands and switch
+
+            Logger(reply.ToString());
+        }
+
+        public new void Disconnect()
+        {
+            this.Quit(LeaveMessage);
             // wait for error message to acknoledge quit
 
-
-            // todo prob sholdnt send the bottom stuff
+            // better way to end thread
             if(_listenerThread != null)
                 _listenerThread.Abort();
 
             base.Disconnect();
         }
 
-        public static void Main()
+        #region Channels
+
+        public Channel CreateChannel(string name, string key = "")
         {
-            var client = new Client
-                             {
-                                 Nickname = "TamaTest",
-                                 RealName = "Tama",
-                                 Server = "chat.freenode.org"
-                             };
+            var channel = new Channel(this, name, key);
+            Channels.Add(name, channel);
+            _listener.ReceivedReply += channel.ProcessReply;
 
-            client.Connect();
+            //this.Join(name, key);
 
-
-            //Channel.Join(client, "#test");
-            //client.Join("#test");
-
-            // send pass (skip)
-            // send nick message
-            // send user message
-            // wait for welcome
-
+            return channel;
         }
 
-    }
+        public Channel[] CreateChannels(string[] names, string[] keys = null)
+        {
+            var channels = new Channel[names.Count()];
+            if(keys != null && names.Count() != keys.Count())
+                throw new ArgumentException("Must have a key for each channel name.");
 
+            for (int i = 0; i < names.Length; i++)
+            {
+                var channel = keys != null ? new Channel(this, names[i], keys[i]) 
+                                      : new Channel(this, names[i]);
+
+                Channels.Add(names[i], channel);
+                _listener.ReceivedReply += channel.ProcessReply;
+            }
+
+            // Multiple channels at once
+            //this.Join(names, keys);
+
+            return channels;
+        } 
+
+        #endregion
+
+        public User CreateUser(string nickname)
+        {
+            return new User(this, nickname);
+        }
+
+        private string _nickname;
+        private Thread _listenerThread;
+        private Listener _listener;
+    }
 }

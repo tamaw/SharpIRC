@@ -98,6 +98,10 @@
       <Project>{ca9941b4-76c9-4b05-83e1-409c52fb6d15}</Project>
       <Name>IRC</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ViewModel\ViewModel.csproj">
+      <Project>{299a8b6f-7692-4cf0-81c4-089cd9725c02}</Project>
+      <Name>ViewModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

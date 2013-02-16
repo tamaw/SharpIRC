@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using IRC;
+using ViewModel;
 
 namespace SharpIRC
 {
@@ -24,7 +26,30 @@ namespace SharpIRC
         public MainWindow()
         {
             InitializeComponent();
-            var client = new Client();
+            var client = new Client
+            {
+                Nickname = "TamaTest",
+                RealName = "Tama",
+                Server = "chat.freenode.org"
+            };
+
+            client.Connect();
+
+            Channel channel = client.CreateChannel("#ubuntu");
+            var channelViewModel = new ChannelViewModel(Dispatcher, channel);
+            MessageDispalyListBox.DataContext = channelViewModel.Messages;
+            channel.Message += (sender, s) => Debug.WriteLine("message: " + s);
+            // todo message should probably have sender 
+            
+            /*
+            channel.Message += (sender, s) =>
+                                   {
+                                       channelViewModel
+                                   };
+            */
+
+            channel.Join();
+
         }
     }
 }

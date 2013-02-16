@@ -35,6 +35,7 @@ namespace IRC
         public int Port { get; set; }
         public Logger Logger { get; set; }
         protected TcpClient TcpClient; // tcplistener?
+        public bool IsConnected { get; private set; }
 
         public Connection()
         {
@@ -58,6 +59,7 @@ namespace IRC
             try
             {
                 TcpClient = new TcpClient(Server, Port);
+                IsConnected = true;
             }
             catch (SocketException e)
             {

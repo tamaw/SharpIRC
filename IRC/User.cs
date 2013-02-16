@@ -23,6 +23,8 @@ namespace IRC
 {
     public class User
     {
+        private readonly Client _client;
+
         [Flags]
         public enum Mode // todo private and use getters/setters
         {
@@ -35,50 +37,39 @@ namespace IRC
             Notices         // s - marks a user for receipt of server notices
         }
                    
-        public User()
+        public User(Client client, string nick)
         {
-            
-        }
-
-        public User(Client client)
-        {
+            _client = client;
+            Nick = nick;
         }
 
         public string Nick { get; set; } // unique to server
         public string RealName { get; set; }
         public Mode Modes;
-    }
 
-    // maybe scrap this
-    /*
-    public class LocalUser : User
-    {
-        private readonly Client _client;
-
-        public new string Nick
+        public void Ignore()
         {
-            get { return base.Nick; }
+            // todo stop logging to UI for this user?
+            //_client.
+        }
+
+        public void Say(String message)
+        {
+        }
+
+        public override string ToString()
+        {
+            return Nick;
+        }
+
+        /*
+        public string Message {
             set
             {
-                if (value == base.Nick) return;
+                if (!string.IsNullOrEmpty(value))
+                    _client.PrivMsg(Nick, value);
 
-                _client.Nick(value);
-                base.Nick = value;
             }
-        }
-
-        //public new string RealName 
-
-        public void Oper(string password)
-        {
-        }
-
-
-        public LocalUser(Client client)
-        {
-            _client = client;
-        }
+        */
     }
-    */
-
 }
