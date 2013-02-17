@@ -5,11 +5,21 @@
         Title="SharpIRC" Height="600" Width="800">
 
         <Grid>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="200,524,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="582" SpellCheck.IsEnabled="True"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="5,524,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="777" SpellCheck.IsEnabled="True"/>
         <StatusBar HorizontalAlignment="Left" Height="18" Margin="0,552,0,0" VerticalAlignment="Top" Width="792"/>
-        <ListBox x:Name="MessageDispalyListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="466" VerticalAlignment="Top" Width="582" Margin="200,53,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-        <ListView x:Name="UsersListView" HorizontalAlignment="Left" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Height="494" Margin="0,53,0,0" VerticalAlignment="Top" Width="195"/>
-        <Menu HorizontalAlignment="Right" Height="23" VerticalAlignment="Top" Width="792"/>
+        <ListBox x:Name="MessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="404" VerticalAlignment="Top" Width="582" Margin="5,115,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+        <ListView x:Name="UsersListView" HorizontalAlignment="Left" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Height="466" Margin="592,53,0,0" VerticalAlignment="Top" Width="195"/>
+        <Menu HorizontalAlignment="Right" Height="23" VerticalAlignment="Top" Width="792" IsMainMenu="True">
+            <MenuItem Header="File"/>
+            <MenuItem Header="Server">
+                <MenuItem x:Name="ConnectMenuItem" Header="Connect" Click="ConnectMenuItem_OnClick"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Chat">
+                <MenuItem x:Name="JoinRoomMenuItem" Header="Join Room" Click="JoinRoomMenuItem_OnClick"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="View"/>
+            <MenuItem Header="Help"/>
+        </Menu>
         <TabControl HorizontalAlignment="Left" Height="30" Margin="0,23,0,0" VerticalAlignment="Top" Width="792">
             <TabItem Header="TabItem">
                 <Grid Background="#FFE5E5E5"/>
@@ -18,5 +28,8 @@
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
         </TabControl>
+        <Border BorderThickness="1.2 1.2 .6 .6" CornerRadius="3.2" BorderBrush="Black" Margin="5,61,205,460" Background="Beige">
+            <TextBlock x:Name="TopicTextBlock" HorizontalAlignment="Left" Margin="-1" TextWrapping="Wrap" Width="582" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Auto" TextTrimming="WordEllipsis"/>
+        </Border>
     </Grid>
 </Window>

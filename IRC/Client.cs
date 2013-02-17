@@ -34,7 +34,7 @@ namespace IRC
     public delegate void Logger(string message);
 
     // todo maybe bring connection into client
-    public class Client : Connection  // client to contain connection (composition)
+    public class Client : Connection  // connection to be obtained from client manager
     {
         public string RealName { get; set; }
         public string ServerPass { get; set; }

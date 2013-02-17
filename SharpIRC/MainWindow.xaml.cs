@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,36 +24,39 @@ namespace SharpIRC
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        // todo to manage multiple clients
+
         public MainWindow()
         {
             InitializeComponent();
-            var client = new Client
+
+            _client = new Client
             {
-                Nickname = "TamaTest",
+                Nickname = "TamaTest3",
                 RealName = "Tama",
                 Server = "chat.freenode.org"
             };
+        }
 
-            client.Connect();
+        private void ConnectMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            _client.Connect();
+        }
 
-            Channel channel = client.CreateChannel("#ubuntu");
+        private void JoinRoomMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            Channel channel = _client.CreateChannel("#ubuntu"); // todo this step to be done by the viewmodel?
             var channelViewModel = new ChannelViewModel(Dispatcher, channel);
 
-            MessageDispalyListBox.DataContext = channelViewModel.Messages;
+            // todo below should be delegated to viewmodel
+            channel.TopicChanged += (o, args) => Dispatcher.Invoke(() =>  TopicTextBlock.Text = args.ToString(CultureInfo.InvariantCulture));
+
+            MessageListBox.DataContext = channelViewModel.Messages;
             UsersListView.DataContext = channelViewModel.Users;
-
-            channel.Message += (sender, s) => Debug.WriteLine("message: " + s);
-            // todo message should probably have sender 
-            
-            /*
-            channel.Message += (sender, s) =>
-                                   {
-                                       channelViewModel
-                                   };
-            */
-
             channel.Join();
-
         }
+
+        private readonly Client _client;
     }
 }

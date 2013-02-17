@@ -35,17 +35,17 @@ namespace IRC
         // todo what permission you have on this channel
         public event EventHandler Joined;
         public event EventHandler Parted; //todo rename left
-        public event EventHandler TopicChanged;
-        public event EventHandler<string> Message;
+        public event EventHandler<string> TopicChanged; //todo domain type Topic? includes user who changed it?
+        public event EventHandler<Message> Message;
 
         public string Topic {
             get { return _topic; } // this.Topic(Name);
             set { _topic = value;  } // todo test admin then set topic?!?
         }
 
-        private void OnMessage(string e)
+        private void OnMessage(Message e)
         {
-            EventHandler<string> handler = Message;
+            EventHandler<Message> handler = Message;
             if (handler != null) handler(this, e);
         }
 
@@ -62,8 +62,8 @@ namespace IRC
 
         private void OnTopicChanged()
         {
-            EventHandler handler = TopicChanged;
-            if (handler != null) handler(this, EventArgs.Empty);
+            EventHandler<string> handler = TopicChanged;
+            if (handler != null) handler(this, Topic);
         }
 
         public Channel(Client client, string name, string key = "")
@@ -106,19 +106,30 @@ namespace IRC
             // not sure why we bother to test this!?!
             //if (reply.Params[0] != _client.Nickname)
                 //return;
-            // todo maybe handle text only in client
-            // maybe handle by logger class for different levels
 
+            // todo maybe handle text only in client and delgate codes to the domain classes
             switch (reply.Command)
             {
                 case "JOIN" :
-                    if(reply.Params.Count > 0 && reply.Params[0] == Name)
-                        OnJoined();
+                    if (reply.Params.Count <= 0 || reply.Params[0] != Name)
+                        return;
+                    OnJoined();
                     break;
                 case "PRIVMSG" :
-                    if(reply.Params.Count > 0 && reply.Params[0] == Name)
-                        OnMessage(reply.Trailing);
-                    break;
+                    {
+                        if (reply.Params.Count == 0 || reply.Params[0] != Name)
+                            return;
+                        User user = Users.First(x => x.Nick == reply.Prefix.Substring(0, reply.Prefix.IndexOf('!') - 1));
+                        OnMessage(new Message(user, reply.Trailing));
+                        break;
+                    }
+                case "QUIT" :
+                    {
+                        User user = Users.First(x => x.Nick == reply.Prefix.Substring(0, reply.Prefix.IndexOf('!')));
+                        // fire user left 
+                        Users.Remove(user);
+                        break;
+                    }
             }
 
             int code;
