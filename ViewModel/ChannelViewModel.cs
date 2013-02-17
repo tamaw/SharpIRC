@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Threading;
 using IRC;
 
@@ -13,7 +15,7 @@ namespace ViewModel
     public class ChannelViewModel 
     {
         public ObservableCollection<string> Messages { get; private set; }
-        public ObservableCollection<string> Users { get; set; } 
+        public ObservableCollection<String> Users { get; set; } 
 
         public ChannelViewModel(Dispatcher dispatcher, Channel channel) : this()
         {
@@ -38,7 +40,7 @@ namespace ViewModel
         public ChannelViewModel()
         {
             Messages = new ObservableCollection<string>();
-            Users = new ObservableCollection<string>();
+            Users = new ObservableCollection<String>();
         }
 
         private Channel _channel;

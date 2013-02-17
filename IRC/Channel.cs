@@ -34,7 +34,7 @@ namespace IRC
         public bool IsConnected { get; set; }
         // todo what permission you have on this channel
         public event EventHandler Joined;
-        public event EventHandler Parted; //todo rename left
+        public event EventHandler Parted;
         public event EventHandler<string> TopicChanged; //todo domain type Topic? includes user who changed it?
         public event EventHandler<Message> Message;
 
@@ -113,20 +113,23 @@ namespace IRC
                 case "JOIN" :
                     if (reply.Params.Count <= 0 || reply.Params[0] != Name)
                         return;
+                    // todo handle new users joining
                     OnJoined();
                     break;
                 case "PRIVMSG" :
                     {
                         if (reply.Params.Count == 0 || reply.Params[0] != Name)
                             return;
-                        User user = Users.First(x => x.Nick == reply.Prefix.Substring(0, reply.Prefix.IndexOf('!') - 1));
+                        User user = Users.First(x => x.Nick == reply.Prefix.Substring(0, reply.Prefix.IndexOf('!')));
                         OnMessage(new Message(user, reply.Trailing));
                         break;
                     }
                 case "QUIT" :
                     {
-                        User user = Users.First(x => x.Nick == reply.Prefix.Substring(0, reply.Prefix.IndexOf('!')));
-                        // fire user left 
+                        string nick = reply.Prefix.Substring(0, reply.Prefix.IndexOf('!'));
+                        User user = Users.FirstOrDefault(x => x.Nick == nick);
+                        if (user == null)
+                            return;
                         Users.Remove(user);
                         break;
                     }

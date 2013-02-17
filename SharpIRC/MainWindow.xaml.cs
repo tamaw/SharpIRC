@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace SharpIRC
         {
             InitializeComponent();
 
+
             _client = new Client
             {
                 Nickname = "TamaTest3",
@@ -54,6 +56,10 @@ namespace SharpIRC
 
             MessageListBox.DataContext = channelViewModel.Messages;
             UsersListView.DataContext = channelViewModel.Users;
+
+            var sortProperty = UsersListView.Tag as string;
+
+            UsersListView.Items.SortDescriptions.Add(new SortDescription(sortProperty, ListSortDirection.Ascending));
             channel.Join();
         }
 
