@@ -11,18 +11,14 @@ using ViewModel;
 
 namespace SharpIRC
 {
-    /// <summary>T:\Users\Tama\Documents\GitHub\SharpIRC\IRC\Program.cs
+    /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
-
         public App()
         {
 
         }
-
-
-
     }
 }
