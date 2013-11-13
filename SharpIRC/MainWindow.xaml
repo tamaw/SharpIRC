@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModel="clr-namespace:ViewModel;assembly=ViewModel"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        Title="SharpIRC" Height="500" Width="850" ShowIconOnTitleBar="True">
+        Title="IRC#" Height="500" Width="850" ShowIconOnTitleBar="True">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -23,7 +23,6 @@
         </controls:WindowCommands>
     </controls:MetroWindow.WindowCommands>
 
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
@@ -32,13 +31,21 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-<!--SelectionChanged="UsersListView_SelectionChanged"-->
-        <ListView x:Name="UsersListView" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged }" Grid.Column="2" Grid.Row="0" />
+        <ListBox x:Name="HeaderMessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="0"/>
+        <GridSplitter HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
+                      Grid.Column="0"
+                      Grid.Row="0"
+                      ResizeBehavior="BasedOnAlignment"
+                      Width="2" Background="Gainsboro"/>
+
+        <ListBox x:Name="MessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="0"/>
         <GridSplitter HorizontalAlignment="Right"
                       VerticalAlignment="Stretch"
                       Grid.Column="1"
@@ -46,9 +53,11 @@
                       ResizeBehavior="PreviousAndNext"
                       Width="5" Background="#41B1E1"/>
 
-        <ListBox x:Name="MessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="0"/>
+<!--SelectionChanged="UsersListView_SelectionChanged"-->
+        <ListView x:Name="UsersListView" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged }" Grid.Column="2" Grid.Row="0" />
 
-        <TextBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+        <TextBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Path=ItemName, UpdateSourceTrigger=Explicit}" PreviewKeyDown="TextBox_PreviewKeyDown">
+
         </TextBox>
 
        <TabControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" TabStripPlacement="Bottom">
