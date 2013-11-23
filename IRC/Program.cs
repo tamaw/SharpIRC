@@ -37,6 +37,5 @@ namespace IRC
             Console.ReadKey();
             client.Disconnect();
         }
-
     }
 }

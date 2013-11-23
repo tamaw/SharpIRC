@@ -1,48 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpIRC.Commandlet;
 
 namespace SharpIRC
 {
-    public class UserCommand
+
+    public sealed class UserCommand
     {
-        public const string CommandStart = "\\";
+        public const string CommandStart = "/";
+        public static readonly List<CommandletEvent> Commandlets = new List<CommandletEvent>(20);
 
-        public enum SharpIRCCommand
+        public struct CommandletEvent
         {
-            Help,
-            Connect,
-            Disconnect,
-            Join,
-            Leave,
-            Exit,
-            Clear,
-            Say
+            public string MatchingText;
+            public Action<string[]> Event;
         }
-
-        public SharpIRCCommand Command { get; set; }
-        public List<string> Params { get; set; }
 
         private UserCommand()
         {
-            Params = new List<string>();
         }
 
-        static private UserCommand Decode(string commandString)
+        public static void Cook(string commandString)
         {
-            var userCommand = new UserCommand();
-
             if (!commandString.StartsWith(CommandStart))
-                return userCommand; // empty command
+                return; // do nothing 
 
-            string[] commandAndParameters = commandString.Split(' ');
+            string[] parameters = commandString.Split(' ');
+            parameters[0] = parameters[0].Substring(1);
 
-            //string[] commandAndParameters = message.Substring(prefixEnd + 1, trailingStart - prefixEnd - 1).Split(' ');
+            foreach (var commandlet in Commandlets)
+            {
+                if (parameters[0] == commandlet.MatchingText)
+                {
+                    commandlet.Event(parameters.Where((s, i) => !string.IsNullOrEmpty(s) && s != parameters[0]).ToArray());
+                    break;
+                }
+            }
 
-            return userCommand;
+        }
+
+        public static void AddCommandlet(string matchingText, Action<string[]> action)
+        {
+            Commandlets.Add(new CommandletEvent {MatchingText = matchingText, Event = action});
         }
 
     }

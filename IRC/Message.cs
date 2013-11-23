@@ -19,6 +19,11 @@ namespace IRC
             DateTime = DateTime.Now;
         }
 
+        public Message(string text)
+        {
+            Text = text;
+        }
+
         public Message(User user, string text)
         {
             DateTime = DateTime.Now;

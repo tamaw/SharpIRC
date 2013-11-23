@@ -48,6 +48,7 @@ namespace IRC
                 if(IsConnected)
                     this.Nick(value); // update on server
                 _nickname = value;
+                Logger("You are now known as " + _nickname);
             }
         }
 
@@ -115,8 +116,7 @@ namespace IRC
             }
 
             // if it doesn't a string match cast to reply commands and switch
-
-            Logger(reply.ToString());
+            Logger(reply.Trailing);
         }
 
         public new void Disconnect()

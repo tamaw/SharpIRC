@@ -75,6 +75,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commandlet\ICommandlet.cs" />
     <Compile Include="LogData.cs" />
     <Compile Include="UserCommand.cs" />
     <Compile Include="MainWindow.xaml.cs">

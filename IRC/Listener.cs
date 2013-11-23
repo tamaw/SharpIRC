@@ -27,8 +27,6 @@ using System.Threading.Tasks;
 namespace IRC
 {
 
- 
-
     internal class Listener
     {
         private NetworkStream _networkStream;

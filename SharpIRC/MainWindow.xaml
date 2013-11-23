@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModel="clr-namespace:ViewModel;assembly=ViewModel"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        Title="IRC#" Height="500" Width="850" ShowIconOnTitleBar="True">
+        Title="IRC#" Height="500" Width="850" ShowIconOnTitleBar="True" FocusManager.FocusedElement="{Binding ElementName=InputTextBox}">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,8 +18,8 @@
 
     <controls:MetroWindow.WindowCommands>
         <controls:WindowCommands>
-            <Button Content="settings"/>
             <Button Content="about"/>
+            <Button Content="settings"/>
         </controls:WindowCommands>
     </controls:MetroWindow.WindowCommands>
 
@@ -37,13 +37,16 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="HeaderMessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="0"/>
+        <ListBox x:Name="StampMessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="0"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                 />
         <GridSplitter HorizontalAlignment="Right"
                       VerticalAlignment="Stretch"
                       Grid.Column="0"
                       Grid.Row="0"
                       ResizeBehavior="BasedOnAlignment"
-                      Width="2" Background="Gainsboro"/>
+                      Width="1" Background="Gainsboro"/>
 
         <ListBox x:Name="MessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="0"/>
         <GridSplitter HorizontalAlignment="Right"
@@ -51,19 +54,36 @@
                       Grid.Column="1"
                       Grid.Row="0"
                       ResizeBehavior="PreviousAndNext"
-                      Width="5" Background="#41B1E1"/>
+                      Width="2" Background="#41B1E1"/>
 
 <!--SelectionChanged="UsersListView_SelectionChanged"-->
-        <ListView x:Name="UsersListView" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged }" Grid.Column="2" Grid.Row="0" />
+        <ListView x:Name="UsersListView" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged }" Grid.Column="2" Grid.Row="0"/>
 
-        <TextBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Path=ItemName, UpdateSourceTrigger=Explicit}" PreviewKeyDown="TextBox_PreviewKeyDown">
+        <TextBox x:Name="InputTextBox" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Path=ItemName, UpdateSourceTrigger=Explicit}" PreviewKeyDown="TextBox_PreviewKeyDown" ForceCursor="True" >
 
         </TextBox>
 
-       <TabControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" TabStripPlacement="Bottom">
-            <TabItem Header="Server1"/>
-            <TabItem Header="#chatroom1"/>
-            <TabItem Header="#chatroom2"/>
+        <TabControl ItemsSource="{Binding Path=Rooms, Mode=OneWay}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=RoomName}" x:Name="Header" Tag="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+
+                    //in here is where you put controls for what you want the tabs to look like.
+
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+
+        <TabControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" TabStripPlacement="Bottom" SelectionChanged="TabControl_SelectionChanged">
+            <TabItem x:Name="xamlTabItem" Header="XAML" IsSelected="{Binding DisplayXamlTab, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </TabItem>
+            <TabItem x:Name="freenodetabitem"  Header="Freenode"/>
+            <TabItem x:Name="anothertab" Header="##csharp" HorizontalAlignment="Right" Width="119"/>
+            <TabItem x:Name="tabitemmmm" Header="#bitcoin-otc"/>
         </TabControl>
     </Grid>
 </controls:MetroWindow>
