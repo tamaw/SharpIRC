@@ -1,24 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using IRC;
 
-namespace ViewModel
+namespace SharpIRC.ViewModel
 {
+    // todo this is redundandt replaced with clientview model
     public sealed class ServerViewModel 
     {
+
+        public ObservableCollection<ChannelViewModel> Channels { get; set; }
+
         public ServerViewModel(Client ircClient)
         {
             Messages = new ObservableCollection<string>();
             StampMessages  = new ObservableCollection<string>();
             Users = new ObservableCollection<User>();
+            Channels = new ObservableCollection<ChannelViewModel>();
+            
+            // maybe move this
+            Channels.Add(new ChannelViewModel(new Channel(ircClient, "Freenodez")));
 
             ircClient.Logger = Message;
         }

@@ -26,7 +26,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace IRC
 {
@@ -133,11 +132,17 @@ namespace IRC
 
         #region Channels
 
+        public event EventHandler<Reply> ReceivedReply
+        {
+            add { _listener.ReceivedReply += value; }
+            remove { _listener.ReceivedReply -= value; }
+        }
+
         public Channel CreateChannel(string name, string key = "")
         {
             var channel = new Channel(this, name, key);
             Channels.Add(name, channel);
-            _listener.ReceivedReply += channel.ProcessReply;
+            //_listener.ReceivedReply += channel.ProcessReply; // move this! doesn't coincide with new Channel() either
 
             //this.Join(name, key);
 
@@ -156,7 +161,7 @@ namespace IRC
                                       : new Channel(this, names[i]);
 
                 Channels.Add(names[i], channel);
-                _listener.ReceivedReply += channel.ProcessReply;
+                //_listener.ReceivedReply += channel.ProcessReply;
             }
 
             // Multiple channels at once

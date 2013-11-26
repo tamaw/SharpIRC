@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="4A8596BE-B377-452B-845B-8A02259A0BFD" Name="IRC#" Language="1033" Version="1.0.0.0" Manufacturer="IRC#" UpgradeCode="23348730-f69f-4aaa-8abc-d1ccf5841797">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of IRC# is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <Property Id="DISABLEADVTSHORTCUTS" Value="1"/>
+    <Property Id="MSIUSEREALADMINDETECTION" Value="1"/>
+
+    <WixVariable Id="WixUILicenseRtf" Value="../SharpIRC/bin/release/License.rtf"/>
+
+    <Feature Id="ProductFeature" Title="Installer" Level="1">
+      <ComponentGroupRef Id="ProductComponents"/>
+      <ComponentRef Id="ProgramMenuDir"/>
+    </Feature>
+
+    <PropertyRef Id="NETFRAMEWORK40CLIENT"/>
+    <Condition Message="IRC# requires the full .NET Framework 4.0 of higher installed. http://go.microsoft.com/fwlink/?linkid=262043">
+      <![CDATA[&INSTALLED OR NETFRAMEWORK40CLIENT]]>
+    </Condition>
+
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="SharpIRC">
+        </Directory>
+        <Directory Id="ProgramMenuFolder" Name="Programs">
+          <Directory Id="ProgramMenuDir" Name="SharpIRC">
+            <Component Id="ProgramMenuDir" Guid="A906C9D3-D8F8-4409-9CA5-1ACACE48FEEB">
+              <RegistryValue Root="HKCU" Key="Software\SharpIRC" Type="string" Value="" KeyPath="yes"/>
+              <RemoveFolder Id="ProgramMenuDir" On="uninstall"/>
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+
+        <!-- The main SharpIRC executable -->
+      <Component Id="MainExecutable" Guid="847FBF72-E1C4-45C9-A8F1-F31C727E8BA1">
+        <File Id="SharpIRCEXE" Name="SharpIRC.exe" Source="../SharpIRC/bin/Release/SharpIRC.exe">
+          <Shortcut Id="SharpIRC" Directory="ProgramMenuDir" Name="SharpIRC" WorkingDirectory="INSTALLFOLDER" Advertise="no"
+                    Description="IRC Client"/>
+        </File>
+        <RegistryValue Root="HKCU" Key="Software\SharpIRC" Type="string" Value="" KeyPath="yes"/>
+      </Component>
+
+      <!-- The SharpIRC configuration file -->
+      <Component Id="Configuration" Guid="105A8169-368A-482A-823A-1281AC8A5E80">
+        <File Id="SharpIRCConfig" Name="SharpIRC.exe.config" Source="../SharpIRC/bin/release/SharpIRC.exe.config"/>
+      </Component>
+
+      <!-- The IRC Client library -->
+      <Component Id="IRCLib" Guid="A8376BE8-DE45-4118-A5B0-A0EB95CF3354">
+        <File Id="IRCDLL" Name="IRC.dll" Source="../SharIRC/bin/release/IRC.dll"/>
+      </Component>
+
+      <!-- MahAppsMetro library for UI theme -->
+      <Component Id="MetroLib" Guid="4674DFA5-710A-4BF1-9A03-DBADB81C4D42">
+        <File Id="MahAppsMetroDLL" Name="MahApps.Metro.dll" Source="../SharpIRC/bin/release/MahApps.Metro.dll"/>
+      </Component>
+
+      <Component Id="InteractivityLib" Guid="86CE893F-5B05-4900-BD66-33DADCCF1E4D">
+        <File Id="InteractivityDLL" Name="System.Windows.Interactivity.dll" Source="../SharpIRC/bin/release/System.Windows.Interactivity.dll"/>
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+</Wix>

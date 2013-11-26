@@ -1,0 +1,108 @@
+﻿<controls:MetroWindow x:Class="SharpIRC.MainWindow2"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModel="clr-namespace:SharpIRC.ViewModel"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="IRC#" Height="500" Width="850" ShowIconOnTitleBar="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="TabStyleResource.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <controls:MetroWindow.WindowCommands>
+        <controls:WindowCommands>
+            <Button Content="settings"/>
+            <Button Content="about"/>
+        </controls:WindowCommands>
+    </controls:MetroWindow.WindowCommands>
+
+    <controls:MetroWindow.DataContext>
+        <viewModel:ClientViewModel/>
+    </controls:MetroWindow.DataContext>
+
+    <Grid>
+        <TabControl ItemsSource="{Binding Channels}" TabStripPlacement="Bottom">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                <DockPanel>
+                    <TextBlock Text="{Binding Header}"/>
+                    <!-- maybe introduce closing x -->
+                </DockPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid> 
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ListBox x:Name="StampMessageListBox" ItemsSource="{Binding TimeStamps}"
+                                 Grid.Column="0" Grid.Row="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+
+                        <GridSplitter HorizontalAlignment="Right" 
+                          VerticalAlignment="Stretch"
+                          Grid.Column="0"
+                          Grid.Row="0"
+                          ResizeBehavior="BasedOnAlignment"
+                          Width="1" Background="Gainsboro"/>
+
+                        <ListBox x:Name="MessageListBox" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Messages}">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+
+                        <GridSplitter HorizontalAlignment="Right"
+                          VerticalAlignment="Stretch"
+                          Grid.Column="1"
+                          Grid.Row="0"
+                          ResizeBehavior="PreviousAndNext"
+                          Width="2" Background="#41B1E1"/>
+
+                        <ListBox x:Name="UsersListView" Grid.Column="2" Grid.Row="0" ItemsSource="{Binding Users}">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+
+                        <!-- FocusManager.FocusedElement="{Binding ElementName=InputTextBox}"-->
+                        <TextBox x:Name="InputTextBox" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Grid>
+</controls:MetroWindow>

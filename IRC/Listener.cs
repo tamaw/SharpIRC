@@ -22,7 +22,6 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace IRC
 {

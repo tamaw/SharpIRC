@@ -214,7 +214,7 @@ namespace IRC
 
     };
 
-    public class Reply
+    public class Reply : EventArgs
     {
         public string Prefix { get; set; }
         public string Command { get; set; }

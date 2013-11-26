@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
@@ -17,7 +18,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using IRC;
 using MahApps.Metro.Controls;
-using ViewModel;
+using SharpIRC.ViewModel;
 
 namespace SharpIRC
 {
@@ -29,16 +30,13 @@ namespace SharpIRC
         private readonly App _app = (App) Application.Current;
 
         private readonly ServerViewModel _serverViewModel;
+        private readonly ClientViewModel _clientViewModel;
 
         public MainWindow()
         {
             InitializeComponent();
-            _serverViewModel = new ServerViewModel(_app.IRCConnection);
 
-            // bind data context
-            MessageListBox.DataContext = _serverViewModel.Messages;
-            StampMessageListBox.DataContext = _serverViewModel.StampMessages;
-            UsersListView.DataContext = _serverViewModel.Users;
+            _serverViewModel = new ServerViewModel(_app.IRCClient);
 
             // update scroll on new message
             _serverViewModel.Messages.CollectionChanged += (sender, args) =>
@@ -47,8 +45,12 @@ namespace SharpIRC
                 StampMessageListBox.SelectedIndex = MessageListBox.Items.Count - 1;
 
             AddUserCommandlets();
-        }
 
+            // bind data context
+            MessageListBox.DataContext = _serverViewModel.Messages;
+            StampMessageListBox.DataContext = _serverViewModel.StampMessages;
+            UsersListView.DataContext = _serverViewModel.Users;
+        }
 
         private void AddUserCommandlets()
         {
@@ -59,17 +61,17 @@ namespace SharpIRC
             UserCommand.AddCommandlet("connect", parameters =>
             {
                 if (parameters.Length == 1)
-                    _app.IRCConnection.Server = parameters[0];
+                    _app.IRCClient.Server = parameters[0];
                 // for testing todo remove
-                _app.IRCConnection.RealName = "Tama";
+                _app.IRCClient.RealName = "Tama";
 
-                new Thread(() => _app.IRCConnection.Connect()).Start();
+                new Thread(() => _app.IRCClient.Connect()).Start();
             });
 
             UserCommand.AddCommandlet("join", parameters =>
             {
                 if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0])) {
-                    Channel myChannel = _app.IRCConnection.CreateChannel(parameters[0]);
+                    Channel myChannel = _app.IRCClient.CreateChannel(parameters[0]);
                     myChannel.Users.CollectionChanged += (sender, args) =>
                     {
                         if (args.Action == NotifyCollectionChangedAction.Add)
@@ -79,7 +81,7 @@ namespace SharpIRC
                     };
                     myChannel.Joined += (sender, args) => _serverViewModel.Message("You have joined " + myChannel.Name);
                     myChannel.TopicChanged += (sender, s) => Dispatcher.Invoke(DispatcherPriority.Normal,
-                        (Action)(() => Title = s ));
+                        (Action)(() => Title = s.Text ));
                     myChannel.Message += (sender, message) => _serverViewModel.Message(message);
                     myChannel.Join();
                 }
@@ -88,13 +90,13 @@ namespace SharpIRC
             UserCommand.AddCommandlet("nick", parameters =>
             {
                 if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
-                    _app.IRCConnection.Nickname = parameters[0];
+                    _app.IRCClient.Nickname = parameters[0];
             });
 
             UserCommand.AddCommandlet("leave", parameters =>
             {
                 if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
-                    _app.IRCConnection.Channels.Remove(parameters[0]);
+                    _app.IRCClient.Channels.Remove(parameters[0]);
             });
 
         }
@@ -116,13 +118,7 @@ namespace SharpIRC
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (xamlTabItem.IsSelected)
-            {
-                Debug.WriteLine("i'm selected biatch");
-            }
         }
-
-        
         
 
     }

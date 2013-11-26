@@ -35,11 +35,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChannelViewModel.cs" />
-    <Compile Include="MainWindowViewModel.cs" />
-    <Compile Include="ServerViewModel.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\IRC\IRC.csproj">
       <Project>{ca9941b4-76c9-4b05-83e1-409c52fb6d15}</Project>
       <Name>IRC</Name>

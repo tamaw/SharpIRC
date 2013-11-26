@@ -25,21 +25,43 @@ using System.Linq;
 
 namespace IRC
 {
+
+    public sealed class Topic : EventArgs
+    {
+        public string Text { get; set; }
+        public User ChangeUser { get; set; }
+
+        public Topic()
+        {
+            Text = string.Empty;
+            ChangeUser = null;
+        }
+
+        public Topic(string topicText)
+        {
+            Text = topicText;
+        }
+
+        public override string ToString()
+        {
+            return Text;
+        }
+    }
+
     public sealed class Channel
     {
         public readonly ObservableCollection<User> Users = new ObservableCollection<User>();
         public string Name { get; private set; } // case insensitive
         public string Key { get; private set; } // set changes if OP
-        public Client Client { get; private set; }
         public bool IsConnected { get; set; }
         // todo what permission you have on this channel
         public event EventHandler Joined;
         public event EventHandler Parted;
-        public event EventHandler<string> TopicChanged; //todo domain type Topic? includes user who changed it?
+        public event EventHandler<Topic> TopicChanged; //todo domain type Topic? includes user who changed it?
         public event EventHandler<Message> Message;
 
-        public string Topic {
-            get { return _topic; } // this.Topic(Name);
+        public Topic Topic {
+            get { return _topic; } 
             set { _topic = value;  } // todo test admin then set topic?!?
         }
 
@@ -62,7 +84,7 @@ namespace IRC
 
         private void OnTopicChanged()
         {
-            EventHandler<string> handler = TopicChanged;
+            EventHandler<Topic> handler = TopicChanged;
             if (handler != null) handler(this, Topic);
         }
 
@@ -75,7 +97,11 @@ namespace IRC
 
         public void Join()
         {
-            _client.Join(Name, Key); 
+            if (_client.IsConnected)
+            {
+                _client.ReceivedReply += ProcessReply;
+                _client.Join(Name, Key);
+            }
         }
 
         public void Leave(string message = "")
@@ -145,7 +171,7 @@ namespace IRC
                 case ReplyCode.RplTopic :
                     if (reply.Params[1] != Name)
                         return;
-                    Topic = reply.Trailing;
+                    Topic = new Topic(reply.Trailing);
                     OnTopicChanged();
                     break;
                 case ReplyCode.RplTopicSetBy:
@@ -160,13 +186,13 @@ namespace IRC
                         Users.Add(user);
                     break;
                 case ReplyCode.RplNoTopic:
-                    Topic = String.Empty;
+                    Topic = new Topic();
                     break;
             }
         }
 
         private readonly Client _client;
-        private string _topic;
+        private Topic _topic;
     }
 
 }

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
 using IRC;
-using ViewModel;
 
 
 namespace SharpIRC
@@ -21,16 +20,15 @@ namespace SharpIRC
         /// <summary>
         /// A list of all IRC connections.
         /// </summary>
-        public Client IRCConnection;
+        public readonly Client IRCClient;
         /// <summary>
         /// An event handler for all user commands
         /// </summary>
 
         public App()
         {
-
             // Default connection
-            IRCConnection = new Client(); // todo populate from config file
+            IRCClient = new Client(); // todo populate from config file
         }
 
         protected override void OnLoadCompleted(NavigationEventArgs e)
@@ -42,8 +40,8 @@ namespace SharpIRC
         {
             base.OnExit(e);
             // close IRC connections
-            if(IRCConnection.IsConnected)
-                IRCConnection.Disconnect();
+            if(IRCClient.IsConnected)
+                IRCClient.Disconnect();
         }
 
         protected override void OnStartup(StartupEventArgs e)
