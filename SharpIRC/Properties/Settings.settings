@@ -1,7 +1,30 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SharpIRC.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Nickname" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Guest</Value>
+    </Setting>
+    <Setting Name="RealName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Guest Account</Value>
+    </Setting>
+    <Setting Name="Server" Type="System.String" Scope="User">
+      <Value Profile="(Default)">chat.freenode.org</Value>
+    </Setting>
+    <Setting Name="Port" Type="System.String" Scope="User">
+      <Value Profile="(Default)">6667</Value>
+    </Setting>
+    <Setting Name="Channels" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#testingme</Value>
+    </Setting>
+    <Setting Name="NickName2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Guest101</Value>
+    </Setting>
+    <Setting Name="NickName3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Guest202</Value>
+    </Setting>
+    <Setting Name="LeaveMessage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Bye friends!</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

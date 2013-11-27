@@ -90,7 +90,12 @@
                         </Grid.ColumnDefinitions>
 
                         <ListBox x:Name="MessageListBox" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="0"/>
-                        <TextBox x:Name="InputTextBox" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" PreviewKeyDown="TextBox_PreviewKeyDown" ForceCursor="True"/>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" >
+                            <TextBlock Text="hello"></TextBlock>
+                            <!--<TextBox x:Name="InputTextBox" PreviewKeyDown="TextBox_PreviewKeyDown" ForceCursor="True"/> -->
+                        </StackPanel>>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>

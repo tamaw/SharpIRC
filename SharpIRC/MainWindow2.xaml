@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModel="clr-namespace:SharpIRC.ViewModel"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        Title="IRC#" Height="500" Width="850" ShowIconOnTitleBar="True">
+        Title="IRC#" Height="500" Width="850" ShowIconOnTitleBar="True" Loaded="MainWindow2_OnLoaded">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -24,12 +24,14 @@
         </controls:WindowCommands>
     </controls:MetroWindow.WindowCommands>
 
+    <!--
     <controls:MetroWindow.DataContext>
         <viewModel:ClientViewModel/>
     </controls:MetroWindow.DataContext>
+    -->
 
     <Grid>
-        <TabControl ItemsSource="{Binding Channels}" TabStripPlacement="Bottom">
+        <TabControl x:Name="ChannelTabControl" ItemsSource="{Binding Channels}" TabStripPlacement="Bottom" SelectionChanged="TabControl_SelectionChanged">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                 <DockPanel>
@@ -39,7 +41,7 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
-                <DataTemplate>
+                <DataTemplate x:Name="ChannelDataTemplate" DataType="{x:Type viewModel:ChannelViewModel}" >
                     <Grid> 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -98,8 +100,13 @@
                             </ListBox.ItemContainerStyle>
                         </ListBox>
 
-                        <!-- FocusManager.FocusedElement="{Binding ElementName=InputTextBox}"-->
-                        <TextBox x:Name="InputTextBox" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                        <DockPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+                            <TextBlock x:Name="Nickname"
+                                       DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:MetroWindow}}, Path=DataContext}"
+                                       Text="{Binding Nickname, Mode=OneWay}"
+                                       Padding="4"/>
+                            <TextBox x:Name="InputTextBox" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                        </DockPanel>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>

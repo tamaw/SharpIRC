@@ -62,6 +62,7 @@ namespace IRC
             return Nick;
         }
 
+
         /*
         public string Message {
             set

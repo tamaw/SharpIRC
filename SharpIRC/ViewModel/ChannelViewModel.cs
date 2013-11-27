@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 using IRC;
 
 namespace SharpIRC.ViewModel
@@ -13,34 +15,35 @@ namespace SharpIRC.ViewModel
     {
         public ObservableCollection<string> TimeStamps { get; private set; }
         public ObservableCollection<string> Messages { get; private set; }
-        public ObservableCollection<User> Users { get; set; }
+        public ObservableCollection<User> Users { get; set; } // TODO could be userviewmodel
         public string InputText { get; set; }
 
         public ChannelViewModel(Channel channel)
             : this()
         {
             _channel = channel;
-            Users = _channel.Users;
 
             //Application.Current.MainWindow.Dispatcher
 
             // todo pretty format message (colours)
             channel.Message += (sender, m) => Application.Current.Dispatcher.Invoke(
-                new Action(() =>
-                {
-                }));
+                new Action(() => Message(m)));
 
-            // todo should reverse list and trim 
-            /*
             channel.Users.CollectionChanged += (sender, args) =>
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
                     if (args.Action == NotifyCollectionChangedAction.Add)
-                        Users.Add(((User)args.NewItems[0]));
+                        Users.Add(((User) args.NewItems[0]));
+
                     if (args.Action == NotifyCollectionChangedAction.Remove)
                         Users.Remove(((User)args.OldItems[0]));
                 }));
-            */
+        }
+
+        public void Clear()
+        {
+            TimeStamps.Clear();
+            Messages.Clear();
         }
 
         public void AddUser(User user)
@@ -49,8 +52,23 @@ namespace SharpIRC.ViewModel
 
         public void Message(Message message)
         {
-            TimeStamps.Add(String.Format("[{0:HH:mm:ss}]\t<{1}>", DateTime.Now, message.User.Nick));
-            Messages.Add(message.Text);
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                (Action) (() =>
+                {
+                    TimeStamps.Add(String.Format("[{0:HH:mm:ss}]\t<{1}>", DateTime.Now, message.User.Nick));
+                    Messages.Add(message.Text);
+                }));
+        }
+
+        // todo maybe move me to serverviewmodel when needed
+        public void SystemMessage(string message)
+        {
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                (Action) (() =>
+                {
+                    TimeStamps.Add(String.Format("[{0:HH:mm:ss}]\t\t*", DateTime.Now));
+                    Messages.Add(message);
+                }));
         }
 
         public ChannelViewModel()
@@ -71,6 +89,5 @@ namespace SharpIRC.ViewModel
         }
 
         private readonly Channel _channel;
-
     }
 }

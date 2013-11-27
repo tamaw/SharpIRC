@@ -1,16 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using IRC;
+using SharpIRC.Annotations;
 
 namespace SharpIRC.ViewModel
 {
-    public class ClientViewModel
+    public class ClientViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<ChannelViewModel> Channels { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string Nickname {
+            get { return Client.Nickname; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    Client.Nickname = value;
+                    OnPropertyChanged("Nickname");
+                }
+            }
+        }
+
         public Client Client {
             get { return _client ?? (_client = ((App) Application.Current).IRCClient); }
         }
@@ -18,18 +34,13 @@ namespace SharpIRC.ViewModel
         public ClientViewModel()
         {
             Channels = new ObservableCollection<ChannelViewModel>();
+        }
 
-            var c = new Channel(Client, "servername");
-            var c1 = new Channel(Client, "testing");
-
-            Channels.Add(new ChannelViewModel(c));
-            Channels.Add(new ChannelViewModel(c1));
-
-            Channels[0].Message(new Message(new User(Client, "a user"), "i am test message"));
-            Channels[1].Message(new Message(new User(Client, "user2"), "i am another test message"));
-            Channels[0].Users.Add(new User(Client, "person"));
-            Channels[0].Users.Add(new User(Client, "joebob"));
-            Channels[1].Users.Add(new User(Client, "bobbyjoe"));
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private Client _client;

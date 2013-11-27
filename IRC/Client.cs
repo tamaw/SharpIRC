@@ -46,7 +46,7 @@ namespace IRC
             {
                 if(IsConnected)
                     this.Nick(value); // update on server
-                _nickname = value;
+                _nickname = value; // update locally
                 Logger("You are now known as " + _nickname);
             }
         }
@@ -98,7 +98,8 @@ namespace IRC
             switch (reply.Command)
             {
                 case "NOTICE":
-                    //_client.Logger("RECIEVED A NOTICE!");
+                    Logger(reply.Trailing);
+                    System.Media.SystemSounds.Beep.Play();
                     break;
                 case "PING":
                     this.Pong(reply.Trailing);
@@ -114,8 +115,39 @@ namespace IRC
                     break;
             }
 
-            // if it doesn't a string match cast to reply commands and switch
-            Logger(reply.Trailing);
+            int code;
+            if (!int.TryParse(reply.Command, out code))
+                return;
+
+            switch ((ReplyCode)code)
+            {
+                // welcome messages
+                case ReplyCode.RplWelcome:
+                case ReplyCode.RplYourHost:
+                case ReplyCode.RplCreated:
+                case ReplyCode.RplMyInfo:
+                //case ReplyCode.RplMap: // map needs to be handled differently
+                //case ReplyCode.RplEndOfMap: // describes that the server supports
+                case ReplyCode.RplMotdStart:
+                case ReplyCode.RplMotd:
+                case ReplyCode.RplMotdAlt:
+                case ReplyCode.RplMotdAlt2:
+                case ReplyCode.RplMotdEnd:
+                case ReplyCode.RplUModeIs:
+                // LUser 
+                case ReplyCode.RplLUserClient:
+                case ReplyCode.RplLUserOp:
+                case ReplyCode.RplLUserUnknown:
+                case ReplyCode.RplLUserChannels:
+                case ReplyCode.RplLUserMe:
+                case ReplyCode.RplLUserLocalUser:
+                case ReplyCode.RplLUserGlobalUser:
+                    Logger(reply.Trailing);
+                    break;
+                default:
+                    Debug.WriteLine(reply.Trailing);
+                    break;
+            }
         }
 
         public new void Disconnect()

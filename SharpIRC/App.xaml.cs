@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
 using IRC;
+using SharpIRC.Properties;
 
 
 namespace SharpIRC
@@ -21,14 +22,16 @@ namespace SharpIRC
         /// A list of all IRC connections.
         /// </summary>
         public readonly Client IRCClient;
-        /// <summary>
-        /// An event handler for all user commands
-        /// </summary>
 
         public App()
         {
             // Default connection
-            IRCClient = new Client(); // todo populate from config file
+            IRCClient = new Client
+            {
+                Nickname = Settings.Default.Nickname,
+                RealName = Settings.Default.RealName,
+                Server = Settings.Default.Server
+            }; 
         }
 
         protected override void OnLoadCompleted(NavigationEventArgs e)
