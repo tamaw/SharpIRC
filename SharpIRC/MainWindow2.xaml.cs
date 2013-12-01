@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,7 +81,7 @@ namespace SharpIRC
                 if (parameters.Length == 1)
                     _app.IRCClient.Server = parameters[0];
 
-                // clientviewmodel. server model. message. connecting to x
+                // TODO connecting to x
                 new Thread(() => _app.IRCClient.Connect()).Start();
             });
 
@@ -89,17 +90,29 @@ namespace SharpIRC
             {
                 if (parameters.Length != 1 || string.IsNullOrEmpty(parameters[0])) return;
 
+                // create a channel based off of the first parameter
                 Channel channel = _app.IRCClient.CreateChannel(parameters[0]);
-                _clientViewModel.Channels.Add(new ChannelViewModel(channel));
-                /* myChannel.TopicChanged += (sender, s) => Dispatcher.Invoke(DispatcherPriority.Normal,
-                    (Action)(() => Title = s.Text)); */
+                // create a representation of the channel in the view
+                var cvm = new ChannelViewModel(channel);
+                // create the tab from our collection of channels
+                _clientViewModel.Channels.Add(cvm);
+                // select the newly created tab
+                ChannelTabControl.SelectedIndex = ChannelTabControl.Items.IndexOf(cvm);
+                // join the channel
                 channel.Join();
             });
 
             UserCommand.AddCommandlet("leave", parameters =>
             {
-                if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
-                    _app.IRCClient.Channels.Remove(parameters[0]);
+                var cvm = ChannelTabControl.SelectedItem as ChannelViewModel;
+                if (cvm != null)
+                {
+                    if(parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
+                        cvm.Channel.Leave(parameters[0]);
+                    else
+                        cvm.Channel.Leave();
+                    _clientViewModel.Channels.Remove(cvm);
+                }
             });
         }
 
@@ -111,9 +124,9 @@ namespace SharpIRC
 
             // if it starts in a slash process the command
             if (tBox.Text.StartsWith(UserCommand.CommandStart))
-            {
                 UserCommand.Cook(tBox.Text);
-            }
+            else
+                _currentChannelViewModel.Say(tBox.Text);
 
             tBox.Text = string.Empty;
         }
@@ -121,7 +134,8 @@ namespace SharpIRC
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _currentChannelViewModel = (ChannelViewModel) ChannelTabControl.SelectedItem;
-            Debug.WriteLine("Selection Changed: " + _currentChannelViewModel.Header);
+            if(_currentChannelViewModel != null)
+                Debug.WriteLine("Selection Changed: " + _currentChannelViewModel.Header);
         }
 
         private T FindVisualChildByName<T>(DependencyObject parent, string name) where T : FrameworkElement
@@ -141,5 +155,4 @@ namespace SharpIRC
             return child;
         }
 
-    }
-}
+    } }

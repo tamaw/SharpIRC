@@ -50,19 +50,25 @@ namespace IRC
 
     public sealed class Channel
     {
-        public readonly ObservableCollection<User> Users = new ObservableCollection<User>();
         public string Name { get; private set; } // case insensitive
         public string Key { get; private set; } // set changes if OP
         public bool IsConnected { get; set; }
         // todo what permission you have on this channel
-        public event EventHandler Joined;
-        public event EventHandler Parted;
-        public event EventHandler<Topic> TopicChanged; //todo domain type Topic? includes user who changed it?
+        public event EventHandler<User> Parted;
+        public event EventHandler Left;
+        public event EventHandler<User> Joined;
+        public event EventHandler<Topic> TopicChanged;
         public event EventHandler<Message> Message;
 
         public Topic Topic {
             get { return _topic; } 
             set { _topic = value;  } // todo test admin then set topic?!?
+        }
+
+        private void OnParted(User user)
+        {
+            EventHandler<User> handler = Parted;
+            if (handler != null) handler(this, user);
         }
 
         private void OnMessage(Message e)
@@ -71,14 +77,14 @@ namespace IRC
             if (handler != null) handler(this, e);
         }
 
-        private void OnJoined()
+        private void OnJoined(User user)
         {
-            if (Joined != null) Joined(this, EventArgs.Empty);
+            if (Joined != null) Joined(this, user);
         }
 
-        private void OnParted()
+        private void OnLeft()
         {
-            EventHandler handler = Parted;
+            EventHandler handler = Left;
             if (handler != null) handler(this, EventArgs.Empty);
         }
 
@@ -121,7 +127,7 @@ namespace IRC
 
         public void Say(string message)
         {
-            //_client.
+            _client.PrivMsg(Name, message);
         }
 
         public void ProcessReply(object sender, Reply reply)
@@ -139,34 +145,33 @@ namespace IRC
                 case "JOIN" :
                     if (reply.Params.Count <= 0 || reply.Params[0] != Name)
                         return;
-                    // todo handle new users joining
-                    OnJoined();
+                    OnJoined(new User(_client, reply.Prefix.Substring(0, reply.Prefix.IndexOf('!'))));
                     break;
                 case "PRIVMSG" :
                     {
                         if (reply.Params.Count == 0 || reply.Params[0] != Name)
                             return;
-                        User user = Users.First(x => x.Nick == reply.Prefix.Substring(0, reply.Prefix.IndexOf('!')));
+                        var user = new User(_client, reply.Prefix.Substring(0, reply.Prefix.IndexOf('!')));
                         OnMessage(new Message(user, reply.Trailing));
                         break;
                     }
                 case "QUIT" :
+                    if (reply.Params.Count <= 0 || reply.Params[0] != Name)
                     {
-                        string nick = reply.Prefix.Substring(0, reply.Prefix.IndexOf('!'));
-                        User user = Users.FirstOrDefault(x => x.Nick == nick);
-                        if (user == null)
-                            return;
-                        Users.Remove(user);
-                        break;
+                        var user = new User(_client, reply.Prefix.Substring(0, reply.Prefix.IndexOf('!')))
+                        {
+                            LeaveMessage = reply.Trailing
+                        };
+                        OnParted(user);
                     }
+                    break;
             }
 
             int code;
             if (!int.TryParse(reply.Command, out code))
                 return;
 
-            var replyCode = (ReplyCode) code;
-            switch (replyCode)
+            switch ((ReplyCode) code)
             {
                 case ReplyCode.RplTopic :
                     if (reply.Params[1] != Name)
@@ -175,15 +180,15 @@ namespace IRC
                     OnTopicChanged();
                     break;
                 case ReplyCode.RplTopicSetBy:
-                    if (reply.Params[1] != Name)
+                    if (reply.Params[1] != Name) // not this channel
                         return;
                             // 0 is client nickname
                     // todo may not use this
                     _client.Logger("Topic set by " + reply.Params[2]);
                     break;
                 case ReplyCode.RplNameReply:
-                    foreach (var user in reply.Trailing.Split().Select(name => new User(_client, name)).Where(user => !Users.Contains(user)))
-                        Users.Add(user);
+                   foreach (var user in reply.Trailing.Split().Select(name => new User(_client, name)))
+                        OnJoined(user);
                     break;
                 case ReplyCode.RplNoTopic:
                     Topic = new Topic();

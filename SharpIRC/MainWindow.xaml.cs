@@ -72,13 +72,7 @@ namespace SharpIRC
             {
                 if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0])) {
                     Channel myChannel = _app.IRCClient.CreateChannel(parameters[0]);
-                    myChannel.Users.CollectionChanged += (sender, args) =>
-                    {
-                        if (args.Action == NotifyCollectionChangedAction.Add)
-                            _serverViewModel.AddUser((User)args.NewItems[0]);
-                        if (args.Action == NotifyCollectionChangedAction.Remove)
-                            _serverViewModel.RemoveUser((User)args.OldItems[0]);
-                    };
+
                     myChannel.Joined += (sender, args) => _serverViewModel.Message("You have joined " + myChannel.Name);
                     myChannel.TopicChanged += (sender, s) => Dispatcher.Invoke(DispatcherPriority.Normal,
                         (Action)(() => Title = s.Text ));

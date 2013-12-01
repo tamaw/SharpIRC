@@ -21,7 +21,7 @@ using System;
 
 namespace IRC
 {
-    public class User
+    public class User : EventArgs
     {
         private readonly Client _client;
 
@@ -45,6 +45,7 @@ namespace IRC
 
         public string Nick { get; set; } // unique to server
         public string RealName { get; set; }
+        public string LeaveMessage { get; set; }
         public Mode Modes;
 
         public void Ignore()

@@ -14,6 +14,7 @@ namespace SharpIRC.ViewModel
     {
         public ObservableCollection<ChannelViewModel> Channels { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
+        public User IamUser { get; set; } // should be use rmodel
 
         public string Nickname {
             get { return Client.Nickname; }

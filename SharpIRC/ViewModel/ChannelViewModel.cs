@@ -18,6 +18,11 @@ namespace SharpIRC.ViewModel
         public ObservableCollection<User> Users { get; set; } // TODO could be userviewmodel
         public string InputText { get; set; }
 
+        public Channel Channel
+        {
+            get { return _channel; }
+        }
+
         public ChannelViewModel(Channel channel)
             : this()
         {
@@ -26,18 +31,36 @@ namespace SharpIRC.ViewModel
             //Application.Current.MainWindow.Dispatcher
 
             // todo pretty format message (colours)
-            channel.Message += (sender, m) => Application.Current.Dispatcher.Invoke(
-                new Action(() => Message(m)));
+            channel.Message += (sender, m) => Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                    (Action) (() =>
+                    {
+                        TimeStamps.Add(String.Format("[{0:HH:mm:ss}]\t<{1}>", DateTime.Now, m.User.Nick));
+                        Messages.Add(m.Text);
+                    }));
 
-            channel.Users.CollectionChanged += (sender, args) =>
-                Application.Current.Dispatcher.Invoke(new Action(() =>
+            channel.Joined += (sender, user) =>
+            {
+                if (!Users.Contains(user))
                 {
-                    if (args.Action == NotifyCollectionChangedAction.Add)
-                        Users.Add(((User) args.NewItems[0]));
+                    Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                        (Action) (() => Users.Add(user)));
+                }
 
-                    if (args.Action == NotifyCollectionChangedAction.Remove)
-                        Users.Remove(((User)args.OldItems[0]));
-                }));
+                SystemMessage(user.Nick + " has joined the room.");
+            };
+
+            channel.Parted += (sender, user) =>
+            {
+                if (Users.Contains(user))
+                {
+                    Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                        (Action) (() => Users.Remove(user)));
+                }
+                SystemMessage(user.Nick + " has left the room.");
+            };
+
+            // print the topic when it changes
+            channel.TopicChanged += (sender, topic) => SystemMessage(topic.Text);
         }
 
         public void Clear()
@@ -52,12 +75,7 @@ namespace SharpIRC.ViewModel
 
         public void Message(Message message)
         {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                (Action) (() =>
-                {
-                    TimeStamps.Add(String.Format("[{0:HH:mm:ss}]\t<{1}>", DateTime.Now, message.User.Nick));
-                    Messages.Add(message.Text);
-                }));
+
         }
 
         // todo maybe move me to serverviewmodel when needed
@@ -81,6 +99,11 @@ namespace SharpIRC.ViewModel
         public string Header
         {
             get { return _channel.Name ?? string.Empty; }
+        }
+
+        public void Say(string message)
+        {
+            _channel.Say(message);
         }
 
         public override string ToString()

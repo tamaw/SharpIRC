@@ -103,6 +103,7 @@ namespace IRC
                     break;
                 case "PING":
                     this.Pong(reply.Trailing);
+                    Logger(reply.ToString());
                     break;
                 case "JOIN" :
                     if (reply.Params.Count <= 0 && !Channels.ContainsKey(reply.Params[0]))
@@ -148,12 +149,14 @@ namespace IRC
                     Debug.WriteLine(reply.Trailing);
                     break;
             }
+
+            Debug.WriteLine(reply.ToString());
         }
 
         public new void Disconnect()
         {
             this.Quit(LeaveMessage);
-            // wait for error message to acknoledge quit
+            // wait for error message to acknowledge quit
 
             // better way to end thread
             if(_listenerThread != null)
@@ -174,9 +177,6 @@ namespace IRC
         {
             var channel = new Channel(this, name, key);
             Channels.Add(name, channel);
-            //_listener.ReceivedReply += channel.ProcessReply; // move this! doesn't coincide with new Channel() either
-
-            //this.Join(name, key);
 
             return channel;
         }
