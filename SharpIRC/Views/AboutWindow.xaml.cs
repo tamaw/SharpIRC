@@ -60,13 +60,11 @@ namespace SharpIRC.Views
         private XmlDocument _xmlDoc;
 
         private const string PropertyNameTitle = "Title";
-        private const string PropertyNameDescription = "Description";
         private const string PropertyNameProduct = "Product";
         private const string PropertyNameCopyright = "Copyright";
         private const string XPathRoot = "ApplicationInfo/";
         private const string XPathTitle = XPathRoot + PropertyNameTitle;
         private const string XPathVersion = XPathRoot + "Version";
-        private const string XPathDescription = XPathRoot + PropertyNameDescription;
         private const string XPathProduct = XPathRoot + PropertyNameProduct;
         private const string XPathCopyright = XPathRoot + PropertyNameCopyright;
         private const string XPathLink = XPathRoot + "Link";

@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="Nickname" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Guest</Value>
+      <Value Profile="(Default)">Guest123</Value>
     </Setting>
     <Setting Name="RealName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Guest Account</Value>
@@ -17,14 +17,17 @@
     <Setting Name="Channels" Type="System.String" Scope="User">
       <Value Profile="(Default)">#testingme</Value>
     </Setting>
-    <Setting Name="NickName2" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Guest101</Value>
+    <Setting Name="Nickname2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Guest456</Value>
     </Setting>
-    <Setting Name="NickName3" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Guest202</Value>
+    <Setting Name="Nickname3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Guest789</Value>
     </Setting>
     <Setting Name="LeaveMessage" Type="System.String" Scope="User">
       <Value Profile="(Default)">Bye friends!</Value>
+    </Setting>
+    <Setting Name="FirstRun" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

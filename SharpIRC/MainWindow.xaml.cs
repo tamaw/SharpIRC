@@ -79,6 +79,8 @@ namespace SharpIRC
                 about.Show();
             };
 
+            SettingsButton.Click += (o, args) => new SettingsWindow(this).Show();
+
         }
 
         private void TestRoom()

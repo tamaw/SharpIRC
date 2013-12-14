@@ -12,7 +12,7 @@ namespace SharpIRC.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace SharpIRC.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Guest")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Guest123")]
         public string Nickname {
             get {
                 return ((string)(this["Nickname"]));
@@ -85,25 +85,25 @@ namespace SharpIRC.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Guest101")]
-        public string NickName2 {
+        [global::System.Configuration.DefaultSettingValueAttribute("Guest456")]
+        public string Nickname2 {
             get {
-                return ((string)(this["NickName2"]));
+                return ((string)(this["Nickname2"]));
             }
             set {
-                this["NickName2"] = value;
+                this["Nickname2"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Guest202")]
-        public string NickName3 {
+        [global::System.Configuration.DefaultSettingValueAttribute("Guest789")]
+        public string Nickname3 {
             get {
-                return ((string)(this["NickName3"]));
+                return ((string)(this["Nickname3"]));
             }
             set {
-                this["NickName3"] = value;
+                this["Nickname3"] = value;
             }
         }
         
@@ -116,6 +116,18 @@ namespace SharpIRC.Properties {
             }
             set {
                 this["LeaveMessage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FirstRun {
+            get {
+                return ((bool)(this["FirstRun"]));
+            }
+            set {
+                this["FirstRun"] = value;
             }
         }
     }

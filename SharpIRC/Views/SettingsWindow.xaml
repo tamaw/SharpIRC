@@ -1,0 +1,69 @@
+﻿<controls:MetroWindow x:Class="SharpIRC.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:p="clr-namespace:SharpIRC.Properties"
+        WindowStartupLocation="CenterOwner"
+        DataContext=""
+        Title="Settings" Height="320" Width="300">
+
+    <StackPanel Orientation="Vertical">
+        <Label Content="User Information" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".7*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Margin="15,0,0,0" Content="Nickname:"/>
+            <TextBox x:Name="NicknameTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,20,0"
+                     Text="{Binding Mode=OneTime, Path=Nickname, Source={x:Static p:Settings.Default} }" />
+
+            <Label Grid.Row="1" Grid.Column="0" Margin="15,0,0,0" Content="Second Choice:"/>
+            <TextBox x:Name="SecondTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,20,0" 
+                    Text="{Binding Mode=OneTime, Path=Nickname2, Source={x:Static p:Settings.Default}}" />
+
+            <Label Grid.Row="2" Grid.Column="0" Margin="15,0,0,0" Content="Third Choice:"/>
+            <TextBox x:Name="ThirdTextBox"  Grid.Row="2" Grid.Column="1" Margin="0,0,20,0"
+                     Text="{Binding Mode=OneTime, Path=Nickname3, Source={x:Static p:Settings.Default}}" />
+
+            <Label Grid.Row="3" Grid.Column="0" Margin="15,0,0,0" Content="Real Name:"/>
+            <TextBox x:Name="RealNameTextBox" Grid.Row="3" Grid.Column="1" Margin="0,0,20,0"
+                     Text="{Binding Mode=OneTime, Path=RealName, Source={x:Static p:Settings.Default}}"/>
+
+            <Label Grid.Row="4" Grid.Column="0" Margin="15,0,0,0" Content="Leave Message:"/>
+            <TextBox x:Name="LeaveTextBox" Grid.Row="4" Grid.Column="1" Margin="0,0,20,0"
+                   Text="{Binding Mode=OneTime, Path=LeaveMessage, Source={x:Static p:Settings.Default}}"/>
+        </Grid>
+        <Label Content="Server Information" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".7*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Margin="15,0,0,0" Content="Server:"/>
+            <TextBox x:Name="ServerTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,20,0"
+                   Text="{Binding Mode=OneTime, Path=Server, Source={x:Static p:Settings.Default}}"/>
+
+            <Label Grid.Row="1" Grid.Column="0" Margin="15,0,0,0" Content="Port:"/>
+            <TextBox x:Name="PortTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,20,0"
+                   Text="{Binding Mode=OneTime, Path=Port, Source={x:Static p:Settings.Default}}"/>
+        </Grid>
+        <DockPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10">
+            <Button x:Name="CancelButton" Margin="5" Width="80" Content="Cancel"></Button>
+            <Button x:Name="SaveButton" Margin="5" Width="80" Content="Save"></Button>
+        </DockPanel>
+    </StackPanel>
+</controls:MetroWindow>
