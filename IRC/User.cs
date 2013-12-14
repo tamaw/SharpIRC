@@ -1,27 +1,17 @@
 ﻿#region License
-// Copyright 2013 Tama Waddell <tamrix@gmail.com>
+// Copyright 2013 Tama Waddell <me@tama.id.au>
 // 
-// This file is part of SharpIRC.
-// 
-// SharpIRC is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// SharpIRC is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with SharpIRC.  If not, see <http://www.gnu.org/licenses/>.
-// 
+// This file is a part of IRC. <https://github.com/tamaw/SharpIRC>
+//  
+// This source is subject to the Microsoft Public License.
+// <http://www.microsoft.com/opensource/licenses.mspx#Ms-PL>
+//  All other rights reserved.
 #endregion
 using System;
 
 namespace IRC
 {
-    public class User : EventArgs
+    public class User : EventArgs, IComparable
     {
         private readonly Client _client;
 
@@ -61,6 +51,12 @@ namespace IRC
         public override string ToString()
         {
             return Nick;
+        }
+
+        public int CompareTo(object obj)
+        {
+            var user = (User) obj;
+            return String.Compare(Nick, user.Nick, StringComparison.Ordinal);
         }
 
 

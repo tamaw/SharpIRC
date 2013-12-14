@@ -1,26 +1,15 @@
 ﻿#region License
-// Copyright 2013 Tama Waddell <tamrix@gmail.com>
+// Copyright 2013 Tama Waddell <me@tama.id.au>
 // 
-// This file is part of SharpIRC.
-// 
-// SharpIRC is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// SharpIRC is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with SharpIRC.  If not, see <http://www.gnu.org/licenses/>.
-// 
+// This file is a part of IRC. <https://github.com/tamaw/SharpIRC>
+//  
+// This source is subject to the Microsoft Public License.
+// <http://www.microsoft.com/opensource/licenses.mspx#Ms-PL>
+//  All other rights reserved.
 #endregion
-
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Linq;
 
 namespace IRC
@@ -57,6 +46,14 @@ namespace IRC
         public event EventHandler<User> Parted;
         public event EventHandler Left;
         public event EventHandler<User> Joined;
+        public event EventHandler<NamesList> NamesList;
+
+        private void OnNamesList(NamesList e)
+        {
+            EventHandler<NamesList> handler = NamesList;
+            if (handler != null) handler(this, e);
+        }
+
         public event EventHandler<Topic> TopicChanged;
         public event EventHandler<Message> Message;
 
@@ -99,6 +96,8 @@ namespace IRC
             Name = name;
             Key = key;
             _client = client;
+            Joined += (sender, user) => IsConnected = true;
+            Left += (sender, args) => IsConnected = false;
         }
 
         public void Join()
@@ -144,8 +143,7 @@ namespace IRC
             {
                 case "JOIN" :
                     if (reply.Params.Count <= 0 || reply.Params[0] != Name)
-                        return;
-                    OnJoined(new User(_client, reply.Prefix.Substring(0, reply.Prefix.IndexOf('!'))));
+                        OnJoined(new User(_client, reply.Prefix.Substring(0, reply.Prefix.IndexOf('!'))));
                     break;
                 case "PRIVMSG" :
                     {
@@ -187,8 +185,12 @@ namespace IRC
                     _client.Logger("Topic set by " + reply.Params[2]);
                     break;
                 case ReplyCode.RplNameReply:
+                    if(_names == null) _names = new NamesList();
                    foreach (var user in reply.Trailing.Split().Select(name => new User(_client, name)))
-                        OnJoined(user);
+                       _names.Add(user);
+                    break;
+                case ReplyCode.RplEndOfNames:
+                    OnNamesList(new NamesList(_names));
                     break;
                 case ReplyCode.RplNoTopic:
                     Topic = new Topic();
@@ -197,6 +199,7 @@ namespace IRC
         }
 
         private readonly Client _client;
+        private NamesList _names;
         private Topic _topic;
     }
 

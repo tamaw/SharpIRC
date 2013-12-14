@@ -1,27 +1,18 @@
 ﻿#region License
-// Copyright 2013 Tama Waddell <tamrix@gmail.com>
+// Copyright 2013 Tama Waddell <me@tama.id.au>
 // 
-// This file is part of SharpIRC.
-// 
-// SharpIRC is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// SharpIRC is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with SharpIRC.  If not, see <http://www.gnu.org/licenses/>.
-// 
+// This file is a part of IRC. <https://github.com/tamaw/SharpIRC>
+//  
+// This source is subject to the Microsoft Public License.
+// <http://www.microsoft.com/opensource/licenses.mspx#Ms-PL>
+//  All other rights reserved.
 #endregion
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace IRC
 {
@@ -49,9 +40,10 @@ namespace IRC
             var data = new byte[4076]; // MAX 512 characters per message (ascii/unicode?) multi messages however/!?
 
             int size;
+
             while ((size = _networkStream.Read(data, 0, data.Length)) != 0)
             {
-                string[] messages = Encoding.ASCII.GetString(data, 0 , size).Split('\n');
+                string[] messages = Encoding.ASCII.GetString(data, 0, size).Split('\n');
 
                 foreach (var message in messages)
                 {

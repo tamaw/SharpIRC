@@ -1,9 +1,22 @@
-﻿using System;
+﻿#region License
+// Copyright 2013 Tama Waddell <me@tama.id.au>
+// 
+// This file is a part of SharpIRC. <https://github.com/tamaw/SharpIRC>
+//  
+// This source is subject to the Microsoft Public License.
+// <http://www.microsoft.com/opensource/licenses.mspx#Ms-PL>
+//  All other rights reserved.
+#endregion
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mime;
+using System.Reflection;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +27,13 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using IRC;
 using MahApps.Metro.Controls;
 using SharpIRC.ViewModel;
+using SharpIRC.Views;
 
 namespace SharpIRC
 {
@@ -28,83 +43,139 @@ namespace SharpIRC
     public partial class MainWindow : MetroWindow
     {
         private readonly App _app = (App) Application.Current;
-
-        private readonly ServerViewModel _serverViewModel;
         private readonly ClientViewModel _clientViewModel;
+        private IIrcTabItemModel _currentChannelViewModel; 
 
         public MainWindow()
         {
             InitializeComponent();
+            _clientViewModel = new ClientViewModel();
+            DataContext = _clientViewModel;
+        }
 
-            _serverViewModel = new ServerViewModel(_app.IRCClient);
+        private void AddServerChannel()
+        {
+            var serverTab = new ServerViewModel(_app.IRCClient);
+            _app.IRCClient.Logger += serverTab.Message;
+            _clientViewModel.IrcTabItems.Add(serverTab);
+            ChannelTabControl.SelectedIndex = 0;
 
-            // update scroll on new message
-            _serverViewModel.Messages.CollectionChanged += (sender, args) =>
-                MessageListBox.SelectedIndex = MessageListBox.Items.Count - 1;
-            _serverViewModel.StampMessages.CollectionChanged += (sender, args) =>
-                StampMessageListBox.SelectedIndex = MessageListBox.Items.Count - 1;
+            serverTab.Message("Welcome to SharpIRC.");
+            serverTab.Message("Created by Tama Waddell.");
+            serverTab.Message("GNU GENERAL PUBLIC LICENSE and Creative Commerce license.");
+            serverTab.Message("See README for more information.");
+            serverTab.Message("Type /help to begin.");
+        }
 
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            AddServerChannel();
             AddUserCommandlets();
 
-            // bind data context
-            MessageListBox.DataContext = _serverViewModel.Messages;
-            StampMessageListBox.DataContext = _serverViewModel.StampMessages;
-            UsersListView.DataContext = _serverViewModel.Users;
+            AboutButton.Click += (o, args) =>
+            {
+                var about = new AboutWindow(this);
+                about.okButton.Click += (sender1, eventArgs) => about.Close();
+                about.Show();
+            };
+
+        }
+
+        private void TestRoom()
+        {
+            // todo remove me
+            var chan = new Channel(_app.IRCClient, "#testing");
+            var cvm = new ChannelViewModel(chan);
+            _clientViewModel.IrcTabItems.Add(cvm);
+
+            cvm.Users.Add(new User(_app.IRCClient, "A"));
+            cvm.Users.Add(new User(_app.IRCClient, "Q"));
+            cvm.Users.Add(new User(_app.IRCClient, "b"));
+            cvm.Users.Add(new User(_app.IRCClient, "h"));
+            cvm.Users.Add(new User(_app.IRCClient, "Z"));
+            cvm.Users.Add(new User(_app.IRCClient, "0"));
+            cvm.Users.Add(new User(_app.IRCClient, "Ar"));
+            cvm.Users.Add(new User(_app.IRCClient, "p"));
+
+            ChannelTabControl.SelectedIndex = 1;
         }
 
         private void AddUserCommandlets()
         {
-            UserCommand.AddCommandlet("help", parameters => _serverViewModel.Message("Commands: help, connect, join, leave, exit, clear, say, nick"));
+            UserCommand.AddCommandlet("help", parameters => _currentChannelViewModel.Message(
+                "Commands: /connect, /join, /leave, /exit, /clear, /say, /nick, /help"));
             UserCommand.AddCommandlet("exit", parameters => _app.Shutdown(0));
-            UserCommand.AddCommandlet("clear", parameters => _serverViewModel.Clear());
-
+            UserCommand.AddCommandlet("clear", parameters => _currentChannelViewModel.Clear());
+            UserCommand.AddCommandlet("nick", parameters =>
+            {
+                if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
+                    _clientViewModel.Nickname = parameters[0];
+            });
             UserCommand.AddCommandlet("connect", parameters =>
             {
                 if (parameters.Length == 1)
                     _app.IRCClient.Server = parameters[0];
-                // for testing todo remove
-                _app.IRCClient.RealName = "Tama";
 
+                // TODO say connecting to x
                 new Thread(() => _app.IRCClient.Connect()).Start();
             });
 
             UserCommand.AddCommandlet("join", parameters =>
             {
-                if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0])) {
-                    Channel myChannel = _app.IRCClient.CreateChannel(parameters[0]);
+                if (parameters.Length != 1 || string.IsNullOrEmpty(parameters[0])) return;
 
-                    myChannel.Joined += (sender, args) => _serverViewModel.Message("You have joined " + myChannel.Name);
-                    myChannel.TopicChanged += (sender, s) => Dispatcher.Invoke(DispatcherPriority.Normal,
-                        (Action)(() => Title = s.Text ));
-                    myChannel.Message += (sender, message) => _serverViewModel.Message(message);
-                    myChannel.Join();
-                }
-            });
-
-            UserCommand.AddCommandlet("nick", parameters =>
-            {
-                if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
-                    _app.IRCClient.Nickname = parameters[0];
+                // create a channel based off of the first parameter
+                Channel channel = _app.IRCClient.CreateChannel(parameters[0]);
+                // create a representation of the channel in the view
+                var cvm = new ChannelViewModel(channel);
+                // add the channel to the tabs list
+                _clientViewModel.IrcTabItems.Add(cvm);
+                // select the newly created tab
+                ChannelTabControl.SelectedIndex = ChannelTabControl.Items.IndexOf(cvm);
+                cvm.Channel.NamesList += (sender, list) => Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+                {
+                    var userListBox = FindVisualChildByName<ListBox>(ChannelTabControl, "UsersListView");
+                    if(userListBox == null)
+                        Debug.WriteLine("not found: null");
+                    else 
+                        userListBox.Items.SortDescriptions.Add(new SortDescription("Nick", ListSortDirection.Ascending));
+                }));
+                // join the channel
+                channel.Join();
             });
 
             UserCommand.AddCommandlet("leave", parameters =>
             {
-                if (parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
-                    _app.IRCClient.Channels.Remove(parameters[0]);
-            });
+                var cvm = ChannelTabControl.SelectedItem as ChannelViewModel;
+                if (cvm == null) return;
 
+                if(cvm.Channel.IsConnected) 
+                {
+                    if(parameters.Length == 1 && !string.IsNullOrEmpty(parameters[0]))
+                        cvm.Channel.Leave(parameters[0]);
+                    else
+                        cvm.Channel.Leave();
+                }
+                _clientViewModel.IrcTabItems.Remove(cvm);
+            });
         }
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
 
-            var tBox = (TextBox) sender;
+            var tBox = (TextBox)sender;
 
             // if it starts in a slash process the command
             if (tBox.Text.StartsWith(UserCommand.CommandStart))
             {
                 UserCommand.Cook(tBox.Text);
+            }
+            else // without a slash this is a user say command
+            {
+                var channel = _currentChannelViewModel as ChannelViewModel;
+                if (channel != null)
+                    channel.Say(tBox.Text);
             }
 
             tBox.Text = string.Empty;
@@ -112,8 +183,29 @@ namespace SharpIRC
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            _currentChannelViewModel = ChannelTabControl.SelectedItem as IIrcTabItemModel;
+            
+            if(_currentChannelViewModel != null)
+                Debug.WriteLine("Selection Changed: " + _currentChannelViewModel.Header);
         }
-        
+
+        private T FindVisualChildByName<T>(DependencyObject parent, string name) where T : FrameworkElement
+        {
+            T child = default(T);
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var ch = VisualTreeHelper.GetChild(parent, i);
+                Debug.WriteLine(ch.ToString());
+                child = ch as T;
+                if (child != null && child.Name == name)
+                    break; // found
+
+                child = FindVisualChildByName<T>(ch, name); 
+
+                if (child != null) break; // nothing left
+            }
+            return child;
+        }
 
     }
 }
