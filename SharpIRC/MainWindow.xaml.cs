@@ -61,8 +61,6 @@ namespace SharpIRC
             ChannelTabControl.SelectedIndex = 0;
 
             serverTab.Message("Welcome to SharpIRC.");
-            serverTab.Message("Created by Tama Waddell.");
-            serverTab.Message("GNU GENERAL PUBLIC LICENSE and Creative Commerce license.");
             serverTab.Message("See README for more information.");
             serverTab.Message("Type /help to begin.");
         }
