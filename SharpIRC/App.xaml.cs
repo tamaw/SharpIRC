@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
 using IRC;
+using MahApps.Metro;
 using SharpIRC.Properties;
 
 
@@ -40,12 +41,9 @@ namespace SharpIRC
                 Nickname = Settings.Default.Nickname,
                 RealName = Settings.Default.RealName,
                 Server = Settings.Default.Server
-            }; 
-        }
+            };
 
-        protected override void OnLoadCompleted(NavigationEventArgs e)
-        {
-            base.OnLoadCompleted(e);
+
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -58,6 +56,10 @@ namespace SharpIRC
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // set theme
+            ThemeManager.ChangeTheme(this,
+                  ThemeManager.DefaultAccents.First(x => x.Name == Settings.Default.Theme),
+                  (Settings.Default.Style == "Dark") ? Theme.Dark : Theme.Light);
             base.OnStartup(e);
         }
     }

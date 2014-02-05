@@ -60,7 +60,7 @@
 
       <!-- The IRC Client library -->
       <Component Id="IRCLib" Guid="A8376BE8-DE45-4118-A5B0-A0EB95CF3354">
-        <File Id="IRCDLL" Name="IRC.dll" Source="../SharIRC/bin/release/IRC.dll"/>
+        <File Id="IRCDLL" Name="IRC.dll" Source="../SharpIRC/bin/release/IRC.dll"/>
       </Component>
 
       <!-- MahAppsMetro library for UI theme -->

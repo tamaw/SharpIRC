@@ -13,7 +13,7 @@
                 </ApplicationInfo>
             </x:XData>
         </XmlDataProvider>
-        <Image x:Key="aboutLogo" Source="..\Resources\AboutLogo.png" />
+        <Image x:Key="AboutLogo" Source="..\Resources\AboutLogo.png" />
         <Style x:Key="AboutDialogStyle" TargetType="Window">
             <Setter Property="Height" Value="Auto" />
             <Setter Property="Width" Value="500" />
@@ -24,18 +24,6 @@
         </Style>
         <Style x:Key="DisplayAreaStyle" TargetType="{x:Type StackPanel}">
             <Setter Property="Margin" Value="10,10,10,5" />
-        </Style>
-        <Style x:Key="BackgroundStyle" TargetType="{x:Type StackPanel}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush EndPoint="0,1">
-                        <GradientStop Offset="0" Color="LightBlue" />
-                        <GradientStop Offset="0.55" Color="White" />
-                        <GradientStop Offset="0.85" Color="White" />
-                        <GradientStop Offset="1" Color="LightBlue" />
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
         </Style>
         <Style TargetType="Label">
             <Setter Property="Padding" Value="0" />
@@ -49,21 +37,14 @@
         </Style>
         <Style x:Key="ReadOnlyDescStyle" TargetType="{x:Type TextBox}">
             <Setter Property="MinLines" Value="6" />
-            <Setter Property="MaxLines" Value="6" />
+            <Setter Property="MaxLines" Value="8" />
             <Setter Property="IsReadOnly" Value="True" />
             <Setter Property="TextWrapping" Value="WrapWithOverflow" />
             <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
         </Style>
-        <Style x:Key="OkButtonStyle" TargetType="{x:Type Button}">
-            <Setter Property="MinWidth" Value="75" />
-            <Setter Property="Margin" Value="0,5" />
-            <Setter Property="DockPanel.Dock" Value="Right" />
-            <Setter Property="IsDefault" Value="True" />
-            <Setter Property="IsCancel" Value="True" />
-        </Style>
     </Window.Resources>
-    <StackPanel x:Uid="clientArea" Style="{StaticResource BackgroundStyle}">
-        <StaticResource ResourceKey="aboutLogo" />
+    <StackPanel x:Uid="clientArea">
+        <StaticResource ResourceKey="AboutLogo" />
         <StackPanel x:Uid="displayArea" Style="{StaticResource DisplayAreaStyle}" 
                 DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Mode=OneTime}">
             <Label x:Name="productName" x:Uid="productName" 
@@ -76,14 +57,12 @@
             <Label x:Name="reserved" x:Uid="reserved" Content="All Rights Reserved." />
             <Label x:Name="info" x:Uid="info" Style="{StaticResource ParagraphSeparator}" 
                Content="Product license:" />
-            <TextBox x:Name="description" x:Uid="description" Text="{Binding Mode=OneTime, Path=Description}"
-                 Style="{StaticResource ReadOnlyDescStyle}" />
+            <TextBox x:Name="description" x:Uid="description" Text="{Binding Mode=OneTime, Path=Description}" Style="{StaticResource ReadOnlyDescStyle}" />
             <DockPanel x:Uid="buttonArea">
-                <Button x:Name="okButton" x:Uid="okButton" Style="{StaticResource OkButtonStyle}" 
-                    Content="OK" />
+                <Button x:Name="okButton" x:Uid="okButton" Content="OK" IsDefault="True" IsCancel="True" DockPanel.Dock="Right" Margin="0,5" MinWidth="80"/>
                 <Label x:Name="productLink1" x:Uid="productLink" Style="{StaticResource LinkLabelStyle}" >
                     <Hyperlink x:Name="hyperlink1" x:Uid="hyperlink" NavigateUri="{Binding Mode=OneTime, Path=LinkUri}"  Style="{StaticResource LinkLabelStyle}"
-                           Hyperlink.RequestNavigate="hyperlink_RequestNavigate">
+                           RequestNavigate="hyperlink_RequestNavigate">
                         <TextBlock Text="{Binding Mode=OneTime, Path=LinkText}" />
                     </Hyperlink>
                 </Label>

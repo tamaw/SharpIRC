@@ -3,12 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:p="clr-namespace:SharpIRC.Properties"
+        xmlns:v="clr-namespace:SharpIRC.Views"
         WindowStartupLocation="CenterOwner"
-        DataContext=""
-        Title="Settings" Height="320" Width="300">
+        Title="Settings" Height="390" Width="300">
 
     <StackPanel Orientation="Vertical">
-        <Label Content="User Information" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Content="User Preferences" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".7*"/>
@@ -42,7 +42,7 @@
             <TextBox x:Name="LeaveTextBox" Grid.Row="4" Grid.Column="1" Margin="0,0,20,0"
                    Text="{Binding Mode=OneTime, Path=LeaveMessage, Source={x:Static p:Settings.Default}}"/>
         </Grid>
-        <Label Content="Server Information" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Content="Server Preferences" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".7*"/>
@@ -61,6 +61,27 @@
             <TextBox x:Name="PortTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,20,0"
                    Text="{Binding Mode=OneTime, Path=Port, Source={x:Static p:Settings.Default}}"/>
         </Grid>
+        <Label Content="Theme Preferences" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".7*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Margin="15,0,0,0" Content="Colour:"/>
+            <ComboBox x:Name="ThemeComboBox" Grid.Row="0" Grid.Column="1" Margin="0,0,20,0"
+                      SelectedItem="{Binding Mode=OneWay, Path=Theme, Source={x:Static p:Settings.Default}}">
+            </ComboBox>
+            <Label Grid.Row="1" Grid.Column="0" Margin="15,0,0,0" Content="Style:"/>
+            <DockPanel Grid.Row="1" Grid.Column="1" LastChildFill="False">
+                <RadioButton x:Name="StyleDarkRadio" GroupName="style">Dark</RadioButton>
+                <RadioButton x:Name="StyleLightRadio" GroupName="style" DockPanel.Dock="Right" Margin="0,0,20,0">Light</RadioButton>
+            </DockPanel>
+        </Grid>
+
         <DockPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10">
             <Button x:Name="CancelButton" Margin="5" Width="80" Content="Cancel"></Button>
             <Button x:Name="SaveButton" Margin="5" Width="80" Content="Save"></Button>
