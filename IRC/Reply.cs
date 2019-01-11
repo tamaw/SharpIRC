@@ -9,6 +9,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -237,6 +238,7 @@ namespace IRC
 
         public static Reply Decode(string message)
         {
+            Debug.WriteLine(message);
             var reply = new Reply();
             string trailing = string.Empty;
             int prefixEnd = -1;

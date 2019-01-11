@@ -8,27 +8,13 @@
 //  All other rights reserved.
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Mime;
-using System.Reflection;
-using System.Runtime.Remoting.Channels;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using IRC;
 using MahApps.Metro.Controls;
@@ -103,7 +89,7 @@ namespace SharpIRC
         private void AddUserCommandlets()
         {
             UserCommand.AddCommandlet("help", parameters => _currentChannelViewModel.Message(
-                "Commands: /connect, /join, /leave, /exit, /clear, /say, /nick, /help"));
+                "Commands: /connect, /join, /leave, /exit, /clear, /say, /msg, /nick, /help"));
             UserCommand.AddCommandlet("exit", parameters => _app.Shutdown(0));
             UserCommand.AddCommandlet("clear", parameters => _currentChannelViewModel.Clear());
             UserCommand.AddCommandlet("nick", parameters =>
@@ -118,6 +104,15 @@ namespace SharpIRC
 
                 // TODO say connecting to x
                 new Thread(() => _app.IRCClient.Connect()).Start();
+            });
+            UserCommand.AddCommandlet("msg", parameters =>
+            {
+                if(parameters.Length >= 2 && !string.IsNullOrEmpty(parameters[0]) && !string.IsNullOrEmpty(parameters[1]))
+                {
+                    string[] message = new string[parameters.Length -1];
+                    Array.Copy(parameters, 1, message, 0, parameters.Length - 1); // todo, just pass me all as a string dammit
+                    _app.IRCClient.PrivMsg(parameters[0], string.Join(" ", message));
+                }
             });
 
             UserCommand.AddCommandlet("join", parameters =>
@@ -207,5 +202,30 @@ namespace SharpIRC
             return child;
         }
 
+        public bool AutoScroll = true;
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            // User scroll event : set or unset autoscroll mode
+            if (e.ExtentHeightChange == 0)
+            {   // Content unchanged : user scroll event
+                if ((e.Source as ScrollViewer).VerticalOffset == (e.Source as ScrollViewer).ScrollableHeight)
+                {   // Scroll bar is in bottom
+                    // Set autoscroll mode
+                    AutoScroll = true;
+                }
+                else
+                {   // Scroll bar isn't in bottom
+                    // Unset autoscroll mode
+                    AutoScroll = false;
+                }
+            }
+
+            // Content scroll event : autoscroll eventually
+            if (AutoScroll && e.ExtentHeightChange != 0)
+            {   // Content changed and autoscroll mode set
+                // Autoscroll
+                (e.Source as ScrollViewer).ScrollToVerticalOffset((e.Source as ScrollViewer).ExtentHeight);
+            }
+        }
     }
 }

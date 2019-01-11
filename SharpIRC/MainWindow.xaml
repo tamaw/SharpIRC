@@ -31,6 +31,44 @@
             </TabControl.ItemTemplate>
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type viewModel:ChannelViewModel}" >
+                    <DataTemplate.Resources>
+
+                        <Style TargetType="ItemsControl" x:Key="ChatViewerStyle">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <ScrollViewer CanContentScroll="True">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel IsItemsHost="True"/>
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                        <DataTemplate DataType="{x:Type viewModel:MessageEntry}">
+                            <Grid IsSharedSizeScope="True">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding DateTime, StringFormat=[\{0:HH:mm:ss\}]}" Grid.Column="0" FontWeight="Bold" Margin="5,0,5,0"/>
+                                <TextBlock Text="{Binding User}" Grid.Column="1" FontWeight="Bold" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Message}" Grid.Column="2"  TextWrapping="Wrap"/>
+                            </Grid>
+                        </DataTemplate>
+
+                    </DataTemplate.Resources>
+                    
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -39,39 +77,27 @@
                         </Grid.RowDefinitions>
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="3*"/>
-                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <ListBox x:Name="StampMessageListBox" ItemsSource="{Binding TimeStamps}"
-                                 Grid.Column="0" Grid.Row="0"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                        </ListBox>
-
-                        <GridSplitter HorizontalAlignment="Right" 
-                          VerticalAlignment="Stretch"
-                          Grid.Column="0"
-                          Grid.Row="0"
-                          ResizeBehavior="BasedOnAlignment"
-                          Width="1" Background="Gainsboro"/>
-
-                        <ListBox x:Name="MessageListBox" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Messages}">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                        </ListBox>
+                        <DockPanel Grid.Column="0" Grid.Row="0">
+                            <ItemsControl ItemsSource="{Binding Messages}" Style="{StaticResource ChatViewerStyle}">
+                                <ItemsControl.Template>
+                                    <ControlTemplate>
+                                        <ScrollViewer CanContentScroll="True" ScrollChanged="ScrollViewer_ScrollChanged">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </ItemsControl.Template>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel IsItemsHost="True"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </DockPanel>
 
                         <GridSplitter HorizontalAlignment="Right"
                           VerticalAlignment="Stretch"
@@ -98,7 +124,45 @@
                         </DockPanel>
                     </Grid>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type viewModel:ServerViewModel}" >
+                <DataTemplate DataType="{x:Type viewModel:ServerViewModel}">
+                    <DataTemplate.Resources>
+
+                        <Style TargetType="ItemsControl" x:Key="ChatViewerStyle">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <ScrollViewer CanContentScroll="True">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel IsItemsHost="True"/>
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                        <DataTemplate DataType="{x:Type viewModel:MessageEntry}">
+                            <Grid IsSharedSizeScope="True">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding DateTime, StringFormat=[\{0:HH:mm:ss\}]}" Grid.Column="0" FontWeight="Bold" Margin="5,0,5,0"/>
+                                <TextBlock Text="{Binding User}" Grid.Column="1" FontWeight="Bold" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Message}" Grid.Column="2"  TextWrapping="Wrap"/>
+                            </Grid>
+                        </DataTemplate>
+
+                    </DataTemplate.Resources>
+
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -108,37 +172,24 @@
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="3*"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <ListBox x:Name="StampMessageListBox" ItemsSource="{Binding TimeStamps}"
-                                 Grid.Column="0" Grid.Row="0"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                        </ListBox>
-
-                        <GridSplitter HorizontalAlignment="Right" 
-                          VerticalAlignment="Stretch"
-                          Grid.Column="0"
-                          Grid.Row="0"
-                          ResizeBehavior="BasedOnAlignment"
-                          Width="1" Background="Gainsboro"/>
-
-                        <ListBox x:Name="MessageListBox" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Messages}">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                        </ListBox>
+                        <DockPanel Grid.Column="0" Grid.Row="0">
+                            <ItemsControl ItemsSource="{Binding Messages}" Style="{StaticResource ChatViewerStyle}">
+                                <ItemsControl.Template>
+                                    <ControlTemplate>
+                                        <ScrollViewer CanContentScroll="True" ScrollChanged="ScrollViewer_ScrollChanged">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </ItemsControl.Template>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel IsItemsHost="True"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </DockPanel>
 
                         <DockPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
                             <TextBlock x:Name="Nickname"

@@ -19,7 +19,7 @@ namespace IRC
     // RFC 2812
     // these probably don't have to be extension methods
     // or maybe move them all to extend client
-    internal static class Commands 
+    public static class Commands 
     {
 
         #region Connection Registration

@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28407.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpIRC", "SharpIRC\SharpIRC.csproj", "{764F5C1D-C681-44AA-B127-1DBFF182AD36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRC", "IRC\IRC.csproj", "{CA9941B4-76C9-4B05-83E1-409C52FB6D15}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Installer", "Installer\Installer.wixproj", "{E8C2E0A7-2089-48B6-80A3-337AAD78D17E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{63E05831-7277-4A7D-AAF4-4F8A3328807F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,8 +51,23 @@ Global
 		{E8C2E0A7-2089-48B6-80A3-337AAD78D17E}.Release|Mixed Platforms.Build.0 = Release|x86
 		{E8C2E0A7-2089-48B6-80A3-337AAD78D17E}.Release|x86.ActiveCfg = Release|x86
 		{E8C2E0A7-2089-48B6-80A3-337AAD78D17E}.Release|x86.Build.0 = Release|x86
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Debug|x86.Build.0 = Debug|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Release|x86.ActiveCfg = Release|Any CPU
+		{63E05831-7277-4A7D-AAF4-4F8A3328807F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C7BF27BD-D375-47AD-B774-95870DDD28F8}
 	EndGlobalSection
 EndGlobal

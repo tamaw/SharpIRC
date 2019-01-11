@@ -23,8 +23,7 @@ namespace SharpIRC.ViewModel
 {
     public class ChannelViewModel : IIrcTabItemModel
     {
-        public ObservableCollection<string> TimeStamps { get; private set; }
-        public ObservableCollection<string> Messages { get; private set; }
+        public ObservableCollection<MessageEntry> Messages { get; private set; }
         public ObservableCollection<User> Users { get; set; } // TODO could be userviewmodel
         public string InputText { get; set; }
 
@@ -38,14 +37,11 @@ namespace SharpIRC.ViewModel
         {
             _channel = channel;
 
-            //Application.Current.MainWindow.Dispatcher
-
             // todo pretty format message (colours)
             channel.Message += (sender, m) => Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                     (Action) (() =>
                     {
-                        TimeStamps.Add(String.Format("[{0:HH:mm:ss}]\t<{1}>", DateTime.Now, m.User.Nick));
-                        Messages.Add(m.Text);
+                        Messages.Add(new MessageEntry { DateTime = DateTime.Now, User = m.User.Nick, Message = m.Text });
                     }));
 
             channel.NamesList += (sender, list) => Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
@@ -82,7 +78,6 @@ namespace SharpIRC.ViewModel
 
         public void Clear()
         {
-            TimeStamps.Clear();
             Messages.Clear();
         }
 
@@ -97,15 +92,13 @@ namespace SharpIRC.ViewModel
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                 (Action) (() =>
                 {
-                    TimeStamps.Add(String.Format("[{0:HH:mm:ss}]\t\t*", DateTime.Now));
-                    Messages.Add(message);
+                    Messages.Add(new MessageEntry { DateTime = DateTime.Now, Message = message });
                 }));
         }
 
         public ChannelViewModel()
         {
-            TimeStamps = new ObservableCollection<string>();
-            Messages = new ObservableCollection<string>();
+            Messages = new ObservableCollection<MessageEntry>();
             Users = new ObservableCollection<User>();
         }
 
@@ -124,6 +117,12 @@ namespace SharpIRC.ViewModel
 
         public void Say(string message)
         {
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                (Action) (() =>
+                {
+                    // todo change me to real nickname or process back the messages when they come in
+                    Messages.Add(new MessageEntry { DateTime = DateTime.Now, User = "me", Message = message });
+                }));
             _channel.Say(message);
         }
 
